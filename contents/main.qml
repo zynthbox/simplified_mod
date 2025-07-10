@@ -37,45 +37,45 @@ Zynthian.TabbedControlView {
 
     tabActions: [
         Zynthian.TabbedControlViewAction {
-            text: qsTr("Main")
+            text: qsTr("CutOff")
             page: Qt.resolvedUrl("MainView.qml")
-            Zynthian.TabbedControlViewAction {
-                text: qsTr("Tune && Volume")
-                page: Qt.resolvedUrl("MainView.qml")
-            }
-            Zynthian.TabbedControlViewAction {
-                text: qsTr("Voice Pan")
-                page: Qt.resolvedUrl("VoicePanView.qml")
-            }
+            // Zynthian.TabbedControlViewAction {
+            //     text: qsTr("Tune && Volume")
+            //     page: Qt.resolvedUrl("MainView.qml")
+            // }
+            // Zynthian.TabbedControlViewAction {
+            //     text: qsTr("Voice Pan")
+            //     page: Qt.resolvedUrl("VoicePanView.qml")
+            // }
         },
         Zynthian.TabbedControlViewAction {
-            text: qsTr("ADSR")
+            text: qsTr("Release Time")
             page: Qt.resolvedUrl("ADSRView.qml")
         },
         Zynthian.TabbedControlViewAction {
-            text: qsTr("Filter")
+            text: qsTr("Resonance")
             page: Qt.resolvedUrl("FilterView.qml")
-            Zynthian.TabbedControlViewAction {
-                text: qsTr("General")
-                page: Qt.resolvedUrl("FilterView.qml")
-            }
-            Zynthian.TabbedControlViewAction {
-                text: qsTr("Filter ADSR")
-                page: Qt.resolvedUrl("FilterADSRView.qml")
-            }
-        },
-        Zynthian.TabbedControlViewAction {
-            text: qsTr("OSC")
-            page: Qt.resolvedUrl("OSCView.qml")
-        },
-        Zynthian.TabbedControlViewAction {
-            text: qsTr("LFO")
-            page: Qt.resolvedUrl("LFOView.qml")
-        },
-        Zynthian.TabbedControlViewAction {
-            text: qsTr("Mix")
-            page: Qt.resolvedUrl("MixView.qml")
+            // Zynthian.TabbedControlViewAction {
+            //     text: qsTr("General")
+            //     page: Qt.resolvedUrl("FilterView.qml")
+            // }
+            // Zynthian.TabbedControlViewAction {
+            //     text: qsTr("Filter ADSR")
+            //     page: Qt.resolvedUrl("FilterADSRView.qml")
+            // }
         }
+        // Zynthian.TabbedControlViewAction {
+        //     text: qsTr("OSC")
+        //     page: Qt.resolvedUrl("OSCView.qml")
+        // },
+        // Zynthian.TabbedControlViewAction {
+        //     text: qsTr("LFO")
+        //     page: Qt.resolvedUrl("LFOView.qml")
+        // },
+        // Zynthian.TabbedControlViewAction {
+        //     text: qsTr("Mix")
+        //     page: Qt.resolvedUrl("MixView.qml")
+        // }
     ]
 
 }
