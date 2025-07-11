@@ -34,55 +34,33 @@ import Zynthian 1.0 as Zynthian
 Item {
     id: root
 
-
-    Text
-    {
-        width: parent.width
-        color: "red"
-        text: zynqtgui.control.selectedEngineCutoffController ? zynqtgui.control.selectedEngineCutoffController.value_type + " / " + "hehe" : "CXontorller not loaded"
-    }
+    // Zynthian.ControllerLoader {
+    //     anchors.centerIn: parent
+    //     height: 200
+    //     width: 200
+    //     controller {
+    //         ctrl: zynqtgui.control.selectedEngineCutoffController
+    //     }
+    // }
 
     Zynthian.ControllerLoader {
         anchors.centerIn: parent
         height: 200
         width: 200
         controller {
-            ctrl: zynqtgui.control.selectedEngineCutoffController
+            category: "Ctrls#12"
+            index: 0
         }
     }
 
-    // VoiceCount
-    // Zynthian.MultiSwitchController {
-    //     title: qsTr("Voices")
-    //     controller.category: "Ctrls#2"
-    //     controller.index: 0
-    //     stepSize: Math.round(multiSwitch.to / 7)
-    //     valueLabel: Math.round(multiSwitch.value / (200 / 7)) + 1
-    // }
-    // // Octave
-    // Zynthian.MultiSwitchController {
-    //     title: qsTr("Transpose")
-    //     controller.category: "Ctrls#2"
-    //     controller.index: 2
-    //     stepSize: 50
-    //     valueLabel: {
-    //         let val = Math.round((multiSwitch.value - 100) / 50)
-    //         return (val > 0 ? "+" : "") + val
-    //     }
-    // }
-    // // Tune
     // Zynthian.DialController {
+    //         anchors.centerIn: parent
+    //         height: 200
+    //         width: 200
     //     title: qsTr("Tune")
     //     controller.category: "Ctrls#2"
     //     controller.index: 1
     //     valueLabel: (value > 100 ? "+" : "") + Math.round(value - 100) + "%"
-    // }
-    // // VOLUME
-    // Zynthian.SliderController {
-    //     title: qsTr("Volume")
-    //     controller.category: "Ctrls#1"
-    //     controller.index: 3
-    //     valueLabel: Math.round(value / 2)
     // }
 }
 
