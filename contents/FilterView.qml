@@ -30,116 +30,37 @@ import org.kde.kirigami 2.4 as Kirigami
 
 import Zynthian 1.0 as Zynthian
 
-GridLayout {
-    columns: 4
 
-    // Cutoff
-    Zynthian.DialController {
+Item {
+    id: root
+
+    // Zynthian.ControllerLoader {
+    //     anchors.centerIn: parent
+    //     height: 200
+    //     width: 200
+    //     controller {
+    //         ctrl: zynqtgui.control.selectedEngineCutoffController
+    //     }
+    // }
+
+    Zynthian.ControllerLoader {
+        anchors.centerIn: parent
+        height: 200
+        width: 200
         controller {
             category: "Ctrls#12"
             index: 1
         }
     }
 
-    // Resonance
-    Zynthian.DialController {
-        controller {
-            category: "Ctrls#12"
-            index: 2
-        }
-    }
-
-
-    // KeyFollow
-    Zynthian.DialController {
-        controller {
-            category: "Ctrls#12"
-            index: 0
-        }
-    }
-
-    // Filter env amount
-    Zynthian.DialController {
-        controller {
-            category: "Ctrls#13"
-            index: 3
-        }
-    }
-
-    // Warm
-    Zynthian.DialController {
-        controller {
-            category: "Ctrls#13"
-            index: 0
-        }
-    }
-
-    // Bandpassblend
-    Zynthian.SwitchController {
-        id: filtertypeId
-        
-        property int ctrlval: controller.ctrl.value
-        onCtrlvalChanged: {
-            let newTitle;
-            if (lowpassId.ctrlval > 100){
-                newTitle = "24db-6db LowPass";
-            } else {
-                if (ctrlval < 100) newTitle = "12db Low-Notch-HiPass";
-                else newTitle = "12db Low-Band-HiPass";
-            }
-            multimodeId.title = qsTr(newTitle)
-        }
-
-        title: qsTr("Filtertype")
-        controller {
-            category: "Ctrls#13"
-            index: 1
-        }
-        valueLabel: controller.ctrl.value < 100 ? qsTr("Notch") : qsTr("Bandpass")
-    }
-
-    // FourPole
-    Zynthian.SwitchController {
-        id: lowpassId
-        title: qsTr("Lowpass")
-        property int ctrlval: controller.ctrl.value
-        onCtrlvalChanged: {
-            let newTitle;
-            if (ctrlval > 100){
-                newTitle = "24db-6db LowPass";
-            } else {
-                if (filtertypeId.ctrlval < 100) newTitle = "12db Low-Notch-HiPass";
-                else newTitle = "12db Low-Band-HiPass";
-            }
-            multimodeId.title = qsTr(newTitle)
-        }
-        controller {
-            category: "Ctrls#13"
-            index: 2
-        }
-        valueLabel: controller.ctrl.value > 100 ? qsTr("24db") : qsTr("12db")
-    }
-    
-    // MultiMode
-    Zynthian.DialController {
-        id:multimodeId
-        title: qsTr("MultiMode")
-        property int filtertypeVal: 0
-        property int lowpassVal: 0
-        controller {
-            category: "Ctrls#12"
-            index: 3
-        }
-        Component.onCompleted: {
-            let newTitle;
-            if (lowpassId.ctrlval > 100){
-                newTitle = "24db-6db LowPass";
-            } else {
-                if (filtertypeId.ctrlval < 100) newTitle = "12db Low-Notch-HiPass";
-                else newTitle = "12db Low-Band-HiPass";
-            }
-            title = qsTr(newTitle);
-        }
-    }
+    // Zynthian.DialController {
+    //         anchors.centerIn: parent
+    //         height: 200
+    //         width: 200
+    //     title: qsTr("Tune")
+    //     controller.category: "Ctrls#2"
+    //     controller.index: 1
+    //     valueLabel: (value > 100 ? "+" : "") + Math.round(value - 100) + "%"
+    // }
 }
 

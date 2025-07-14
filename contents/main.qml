@@ -27,55 +27,176 @@ import QtQuick 2.10
 import QtQuick.Layouts 1.4
 import QtQuick.Controls 2.2 as QQC2
 import org.kde.kirigami 2.4 as Kirigami
-
+import org.kde.plasma.core 2.0 as PlasmaCore
+import "." as Here
 import Zynthian 1.0 as Zynthian
+import QtGraphicalEffects 1.15
 
-Zynthian.TabbedControlView {
+Item {
     id: root
 
-    property QQC2.StackView stack
+    QQC2.Control {
 
-    tabActions: [
-        Zynthian.TabbedControlViewAction {
-            text: qsTr("CutOff")
-            page: Qt.resolvedUrl("MainView.qml")
-            // Zynthian.TabbedControlViewAction {
-            //     text: qsTr("Tune && Volume")
-            //     page: Qt.resolvedUrl("MainView.qml")
-            // }
-            // Zynthian.TabbedControlViewAction {
-            //     text: qsTr("Voice Pan")
-            //     page: Qt.resolvedUrl("VoicePanView.qml")
-            // }
-        },
-        Zynthian.TabbedControlViewAction {
-            text: qsTr("Release Time")
-            page: Qt.resolvedUrl("ADSRView.qml")
-        },
-        Zynthian.TabbedControlViewAction {
-            text: qsTr("Resonance")
-            page: Qt.resolvedUrl("FilterView.qml")
-            // Zynthian.TabbedControlViewAction {
-            //     text: qsTr("General")
-            //     page: Qt.resolvedUrl("FilterView.qml")
-            // }
-            // Zynthian.TabbedControlViewAction {
-            //     text: qsTr("Filter ADSR")
-            //     page: Qt.resolvedUrl("FilterADSRView.qml")
-            // }
+        anchors.fill: parent
+        padding: 20
+
+        background: Item {
+            PlasmaCore.FrameSvgItem {
+                id: svgBg4
+                // visible: fromCurrentTheme
+                anchors.fill: parent
+
+                readonly property real leftPadding: fixedMargins.left
+                readonly property real rightPadding: fixedMargins.right
+                readonly property real topPadding: fixedMargins.top
+                readonly property real bottomPadding: fixedMargins.bottom
+
+                imagePath: "widgets/tracks-background"
+                colorGroup: PlasmaCore.Theme.ViewColorGroup
+            }
         }
-        // Zynthian.TabbedControlViewAction {
-        //     text: qsTr("OSC")
-        //     page: Qt.resolvedUrl("OSCView.qml")
-        // },
-        // Zynthian.TabbedControlViewAction {
-        //     text: qsTr("LFO")
-        //     page: Qt.resolvedUrl("LFOView.qml")
-        // },
-        // Zynthian.TabbedControlViewAction {
-        //     text: qsTr("Mix")
-        //     page: Qt.resolvedUrl("MixView.qml")
-        // }
-    ]
 
+        contentItem: Item {
+            ColumnLayout {
+                anchors.fill: parent
+                RowLayout {
+                    Layout.fillWidth: true
+                    QQC2.Label {
+
+                        text: "Filter"
+                        font.capitalization: Font.AllUppercase
+                        font.weight: Font.ExtraBold
+                        font.family: "Hack"
+                        font.pointSize: 20
+                        Layout.alignment: Qt.AlignTop
+                    }
+
+                    Item {
+                        Layout.fillWidth: true
+                        implicitHeight: 100
+
+                        Zynthian.AbstractController {
+                            id: lowpassId
+                            anchors.centerIn: parent
+                            width: 200
+                            title: qsTr("Lowpass")
+
+                            property int ctrlval: controller.ctrl.value
+                            controller {
+                                category: "Ctrls#13"
+                                index: 2
+                            }
+
+                            background: null
+                            control:  QQC2.Button {
+                                id: _btn
+                                padding: 10
+                                font.pointSize: 9
+                                font.family: "Hack"
+                                font.weight: Font.Light
+                                font.letterSpacing: 1
+                                text: lowpassId.controller.ctrl.value > 100 ? qsTr("LowPass 24dB") : qsTr("HiPass 12dB")
+
+                                onClicked: lowpassId.controller.ctrl.value = checked ? lowpassId.controller.ctrl.max_value : lowpassId.controller.ctrl.value0
+                                checked: lowpassId.controller.ctrl && lowpassId.controller.ctrl.value !== lowpassId.controller.ctrl.value0
+                                background: Item {
+
+                                    Rectangle {
+                                        id: _recBtn
+                                        radius: height/2
+                                        anchors.fill: parent
+                                        visible: false
+                                        color: _btn.checked?  "#5765f2" : "#333"
+
+                                    }
+                                    InnerShadow {
+                                        anchors.fill: _recBtn
+                                        radius: 8.0
+                                        samples: 16
+                                        horizontalOffset: -3
+                                        verticalOffset: 3
+                                        color: "#b0000000"
+                                        source: _recBtn
+                                    }
+                                    Rectangle {
+                                        anchors.fill: parent
+                                        color: "transparent"
+                                        border.color: Qt.darker("#16171C", 2)
+                                        radius: height/2
+
+                                        Rectangle {
+                                            anchors.fill: parent
+                                            border.color: Qt.lighter("#333", 1.8)
+                                            border.width: 2
+                                            anchors.margins: 1
+                                            opacity: 0.4
+                                            color: "transparent"
+                                            radius: height/2
+
+                                            RadialGradient {
+                                                visible: _btn.checked
+                                                anchors.fill: parent
+                                                gradient: Gradient {
+                                                    GradientStop { position: 0.0; color: "#b5bbe4" }
+                                                    GradientStop { position: 0.5; color: "transparent" }
+                                                }
+                                            }
+                                        }
+                                    }
+
+
+                                }
+                            }
+                        }
+                    }
+
+                    QQC2.Label {
+                        text: "OBXD"
+                        Layout.alignment: Qt.AlignTop
+                        font.capitalization: Font.AllUppercase
+                        font.weight: Font.ExtraBold
+                        font.family: "Hack"
+                        font.pointSize: 20
+                    }
+                }
+
+                RowLayout {
+                    Layout.fillWidth: true
+                    Layout.fillHeight: true
+
+                    Item {
+                        Layout.fillWidth: true
+                        Layout.fillHeight: true
+                        Layout.margins: 10
+
+                        Here.DialControl {
+                            anchors.centerIn: parent
+                            controller {
+                                category: "Ctrls#12"
+                                index: 0
+                            }
+                        }
+                    }
+
+                    Item {
+                        Layout.fillWidth: true
+                        Layout.fillHeight: true
+                        Layout.margins: 10
+
+                        Here.DialControl {
+                            anchors.centerIn: parent
+                            implicitHeight: 250
+                            implicitWidth: 250
+
+                            controller {
+                                category: "Ctrls#12"
+                                index: 1
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
 }
+
