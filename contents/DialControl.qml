@@ -34,11 +34,6 @@ import QtGraphicalEffects 1.15
 Zynthian.AbstractController {
     id: root
 
-    controller {
-        category: "Ctrls#12"
-        index: 0
-    }
-
     // property alias valueLabel: valueLabel.text
     property alias value: dial.value
     property alias from: dial.from
@@ -50,15 +45,16 @@ Zynthian.AbstractController {
     implicitWidth: 300
     implicitHeight: 300
 
-    padding: 10
+    padding: 5
 
     background: null
+    title: ""
 
     contentItem:  Item {
 
         ColumnLayout {
             anchors.fill: parent
-            spacing: 10
+            spacing: 5
 
             QQC2.Label {
                 Layout.fillWidth: true
@@ -108,27 +104,27 @@ Zynthian.AbstractController {
                 }
 
                 handle: Rectangle {
-                       id: handleItem
-                       x: dial.background.x + dial.background.width / 2 - width / 2
-                       y: dial.background.y + dial.background.height / 2 - height / 2
-                       width: 8
-                       height: dial.background.height* 0.12
-                       color: dial.pressed ?  "#5765f2" : "white"
-                       border.color: Qt.darker("#16171C", 2)
-                       radius: 8
-                       antialiasing: true
-                       opacity: dial.enabled ? 1 : 0.3
-                       transform: [
-                           Translate {
-                               y: -Math.min(dial.background.width, dial.background.height) * 0.35 + handleItem.height / 2
-                           },
-                           Rotation {
-                               angle: dial.angle
-                               origin.x: handleItem.width / 2
-                               origin.y: handleItem.height / 2
-                           }
-                       ]
-                   }
+                    id: handleItem
+                    x: dial.background.x + dial.background.width / 2 - width / 2
+                    y: dial.background.y + dial.background.height / 2 - height / 2
+                    width: 8
+                    height: dial.background.height* 0.12
+                    color: dial.pressed ?  "#5765f2" : "white"
+                    border.color: Qt.darker("#16171C", 2)
+                    radius: 8
+                    antialiasing: true
+                    opacity: dial.enabled ? 1 : 0.3
+                    transform: [
+                        Translate {
+                            y: -Math.min(dial.background.width, dial.background.height) * 0.35 + handleItem.height / 2
+                        },
+                        Rotation {
+                            angle: dial.angle
+                            origin.x: handleItem.width / 2
+                            origin.y: handleItem.height / 2
+                        }
+                    ]
+                }
 
                 background: Rectangle {
 
@@ -141,150 +137,152 @@ Zynthian.AbstractController {
                         color: "#80000000"
                     }
 
-                        color: "#333"
-                        radius: width/2
-                        border.color: Qt.darker(color, 1.8)
-                        Item {
-                            id : _container
-                            anchors.fill: parent
-                            anchors.margins: 4
+                    color: "#333"
+                    radius: width/2
+                    border.color: Qt.darker(color, 1.8)
+                    Item {
+                        id : _container
+                        anchors.fill: parent
+                        anchors.margins: 4
 
-                            Repeater {
-                                model: 72
+                        Repeater {
 
-                                Rectangle {
-                                    id: indicator
-                                    width: 5
-                                    height: 20
-                                    radius: width / 2
-                                    color: "#5765f2"
-                                    border.color: "#5765f2"
-                                    opacity: indicator.angle > (dial.angle) ? 0.2 : 1
-                                    readonly property real angle: index * 5 + (-140)
-                                    transform: [
-                                        Translate {
-                                            x: _container.width / 2 - width / 2
-                                        },
-                                        Rotation {
-                                            origin.x: _container.width / 2
-                                            origin.y: _container.height / 2
-                                            angle: indicator.angle
-                                        }
-                                    ]
-                                }
-                            }
-                        }
-
-                        Rectangle {
-                            id: _innerRect
-                            anchors.fill: parent
-                            anchors.margins: 28
-                            color: "#16171C"
-                            radius: width/2
-                            border.color: dial.pressed ? "#5765f2" : Qt.darker(color, 2)
+                            readonly property int amount : Math.round(_container.width/4)
+                            model: amount
 
                             Rectangle {
-                                anchors.fill: parent
-                                anchors.margins: 1
-                                border.color: Qt.lighter(parent.color, 1.5)
-                                color: "transparent"
-                                radius: width/2
-                                border.width: 2
-                                opacity: 0.5
-                            }
-
-                            QQC2.Label {
-                                anchors.centerIn: parent
-                                width: Math.min(90, parent.width*0.4)
-                                horizontalAlignment: Text.AlignHCenter
-                                fontSizeMode: Text.Fit
-                                minimumPointSize: 6
-                                wrapMode: Text.NoWrap
-
-                                font.pointSize: 20
-                                font.weight: Font.ExtraBold
-                                font.family: "Hack"
-                                font.letterSpacing: 2
-                                color: "white"
-                                padding: 4
-                                background: Item {
-
-                                    Rectangle {
-                                        anchors.fill: parent
-
-                                        visible: false
-                                        id: _recLabel
-                                        color:  dial.pressed ? "#5765f2" : "#333"
-                                        border.color: Qt.darker(color, 2)
-                                        radius: 4
-
+                                id: indicator
+                                width: 5
+                                height: 20
+                                radius: width / 2
+                                color: "#5765f2"
+                                border.color: "#5765f2"
+                                opacity: indicator.angle > (dial.angle) ? 0.2 : 1
+                                readonly property real angle: index * (360/Math.round(_container.width/4)) + (-140)
+                                transform: [
+                                    Translate {
+                                        x: _container.width / 2 - width / 2
+                                    },
+                                    Rotation {
+                                        origin.x: _container.width / 2
+                                        origin.y: _container.height / 2
+                                        angle: indicator.angle
                                     }
-
-                                    InnerShadow {
-                                        anchors.fill: _recLabel
-                                        radius: 8.0
-                                        samples: 16
-                                        horizontalOffset: -3
-                                        verticalOffset: 3
-                                        color: "#b0000000"
-                                        source: _recLabel
-                                    }
-                                }
-
-                                text: {
-                                    if (!root.controller.ctrl) {
-                                        return "";
-                                    }
-                                    // Heuristic: convert the values from 0-127 to 0-100
-                                    if (root.controller.ctrl.value0 === 0 && root.controller.ctrl.max_value === 127) {
-                                        return Math.round(100 * (value / 127));
-                                    }
-                                    return root.controller.ctrl.value_print.trim();
-                                }
+                                ]
                             }
                         }
-
-
-
-                        //     Image { source: "background.png" }
-
-                        // //! [needle_shadow]
-                        //     Image {
-                        //         x: 96
-                        //         y: 35
-                        //         source: "needle_shadow.png"
-                        //         transform: Rotation {
-                        //             origin.x: 9; origin.y: 67
-                        //             angle: needleRotation.angle
-                        //         }
-                        //     }
-                        // //! [needle_shadow]
-                        // //! [needle]
-                        //     Image {
-                        //         id: needle
-                        //         x: 98; y: 33
-                        //         antialiasing: true
-                        //         source: "needle.png"
-                        //         transform: Rotation {
-                        //             id: needleRotation
-                        //             origin.x: 5; origin.y: 65
-                        //             //! [needle angle]
-                        //             angle: dial.angle
-                        //             Behavior on angle {
-                        //                 SpringAnimation {
-                        //                     spring: 1.4
-                        //                     damping: .15
-                        //                 }
-                        //             }
-                        //             //! [needle angle]
-                        //         }
-                        //     }
-                        // //! [needle]
-                        // //! [overlay]
-                        //     Image { x: 21; y: 18; source: "overlay.png" }
-                        // //! [overlay]
                     }
+
+                    Rectangle {
+                        id: _innerRect
+                        anchors.fill: parent
+                        anchors.margins: 28
+                        color: "#16171C"
+                        radius: width/2
+                        border.color: dial.pressed ? "#5765f2" : Qt.darker(color, 2)
+
+                        Rectangle {
+                            anchors.fill: parent
+                            anchors.margins: 1
+                            border.color: Qt.lighter(parent.color, 1.5)
+                            color: "transparent"
+                            radius: width/2
+                            border.width: 2
+                            opacity: 0.5
+                        }
+
+                        QQC2.Label {
+                            anchors.centerIn: parent
+                            width: Math.min(90, parent.width*0.4)
+                            horizontalAlignment: Text.AlignHCenter
+                            fontSizeMode: Text.Fit
+                            minimumPointSize: 6
+                            wrapMode: Text.NoWrap
+
+                            font.pointSize: 20
+                            font.weight: Font.ExtraBold
+                            font.family: "Hack"
+                            font.letterSpacing: 2
+                            color: "white"
+                            padding: 4
+                            background: Item {
+
+                                Rectangle {
+                                    anchors.fill: parent
+
+                                    visible: false
+                                    id: _recLabel
+                                    color:  dial.pressed ? "#5765f2" : "#16171C"
+                                    border.color: Qt.darker(color, 2)
+                                    radius: 4
+
+                                }
+
+                                InnerShadow {
+                                    anchors.fill: _recLabel
+                                    radius: 8.0
+                                    samples: 16
+                                    horizontalOffset: 1
+                                    verticalOffset: 3
+                                    color: "#b0000000"
+                                    source: _recLabel
+                                }
+                            }
+
+                            text: {
+                                if (!root.controller.ctrl) {
+                                    return "";
+                                }
+                                // Heuristic: convert the values from 0-127 to 0-100
+                                if (root.controller.ctrl.value0 === 0 && root.controller.ctrl.max_value === 127) {
+                                    return Math.round(100 * (value / 127));
+                                }
+                                return root.controller.ctrl.value_print.trim();
+                            }
+                        }
+                    }
+
+
+
+                    //     Image { source: "background.png" }
+
+                    // //! [needle_shadow]
+                    //     Image {
+                    //         x: 96
+                    //         y: 35
+                    //         source: "needle_shadow.png"
+                    //         transform: Rotation {
+                    //             origin.x: 9; origin.y: 67
+                    //             angle: needleRotation.angle
+                    //         }
+                    //     }
+                    // //! [needle_shadow]
+                    // //! [needle]
+                    //     Image {
+                    //         id: needle
+                    //         x: 98; y: 33
+                    //         antialiasing: true
+                    //         source: "needle.png"
+                    //         transform: Rotation {
+                    //             id: needleRotation
+                    //             origin.x: 5; origin.y: 65
+                    //             //! [needle angle]
+                    //             angle: dial.angle
+                    //             Behavior on angle {
+                    //                 SpringAnimation {
+                    //                     spring: 1.4
+                    //                     damping: .15
+                    //                 }
+                    //             }
+                    //             //! [needle angle]
+                    //         }
+                    //     }
+                    // //! [needle]
+                    // //! [overlay]
+                    //     Image { x: 21; y: 18; source: "overlay.png" }
+                    // //! [overlay]
                 }
+            }
 
         }
 
