@@ -202,13 +202,53 @@ Zynthian.AbstractController {
                 }
             }
         }
-        // Kirigami.Heading {
-        //     id: valueLabel
-        //     level: 2
-        //     text: root.controller.ctrl ? root.controller.ctrl.value_print : ""
-        //     Layout.fillWidth: true
-        //     horizontalAlignment: Text.AlignHCenter
-        // }
+
+        QQC2.Label {
+            Layout.fillWidth: true
+            horizontalAlignment: Text.AlignHCenter
+            text: root.controller.ctrl ? root.controller.ctrl.value_print : ""
+            font.capitalization: Font.AllUppercase
+            font.weight: Font.DemiBold
+            font.family: "Hack"
+            font.pointSize: 9
+            fontSizeMode: Text.Fit
+            minimumPointSize: 6
+            wrapMode: Text.NoWrap
+
+            font.letterSpacing: 2
+            color: "white"
+            padding: 4
+
+            background: Rectangle {
+
+                border.width: 2
+                border.color: "#333"
+                color: "#16171C"
+                radius: 4
+
+                Rectangle {
+                    anchors.fill: parent
+                    anchors.margins: 1
+
+                    visible: false
+                    id: _recLabel
+                    color:  slider.pressed ? "#5765f2" : "#16171C"
+                    border.color: Qt.darker(color, 2)
+                    radius: 4
+
+                }
+
+                InnerShadow {
+                    anchors.fill: _recLabel
+                    radius: 8.0
+                    samples: 16
+                    horizontalOffset: 1
+                    verticalOffset: -3
+                    color: "#b0000000"
+                    source: _recLabel
+                }
+            }
+        }
     }
 }
 

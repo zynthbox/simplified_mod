@@ -88,51 +88,40 @@ Item {
                 RowLayout {
                     Layout.fillWidth: true
                     Layout.fillHeight: true
+                    spacing: 5
 
                     Item {
                         Layout.fillWidth: true
                         Layout.fillHeight: true
                         Layout.margins: 5
 
-                        ColumnLayout {
+                        RowLayout {
                             anchors.fill: parent
                             spacing: 5
 
-                            Here.DialControl {
-
+                            Here.SliderControl {
+                                objectName: "FilterAttack"
                                 Layout.fillHeight: true
-                                implicitWidth: height
+                                Layout.fillWidth: true
+                                slider.orientation: Qt.Vertical
 
                                 controller {
-                                    category: "Ctrls#12"
-                                    index: 1
-                                }
-                            }
-
-                            Here.DialControl {
-                                Layout.fillHeight: true
-                                implicitWidth: height
-
-                                controller {
-                                    category: "Ctrls#13"
+                                    category: "Ctrls#14"
                                     index: 3
                                 }
                             }
 
                             Here.SliderControl {
+                                objectName: "FilterRelease"
                                 Layout.fillWidth: true
-                                implicitHeight: 60
-                                Layout.preferredHeight: 60
-                                Layout.maximumHeight: 60
-                                slider.orientation: Qt.Horizontal
+                                Layout.fillHeight: true
+                                slider.orientation: Qt.Vertical
                                 controller {
                                     category: "Ctrls#15"
                                     index: 2
                                 }
                             }
                         }
-
-
                     }
 
                     Item {
@@ -145,79 +134,98 @@ Item {
                             anchors.fill: parent
                             spacing: 5
 
-                            Zynthian.AbstractController {
-                                id: lowpassId
-                                implicitWidth: 200
-                                implicitHeight: 60
-                                Layout.preferredHeight: 60
-                                Layout.maximumHeight: 60
-                                Layout.alignment: Qt.AlignHCenter
-                                title: qsTr("Lowpass")
+                            RowLayout {
+                                Layout.fillWidth: true
+                                Layout.preferredHeight: 150
+                                Layout.maximumHeight: 150
 
-                                property int ctrlval: controller.ctrl.value
-                                controller {
-                                    category: "Ctrls#13"
-                                    index: 2
+                                Here.DialControl {
+                                    objectName: "Resonance"
+                                    Layout.fillHeight: true
+                                    Layout.fillWidth: true
+                                    implicitWidth: height
+
+                                    controller {
+                                        category: "Ctrls#12"
+                                        index: 1
+                                    }
                                 }
 
-                                background: null
-                                control:  QQC2.Button {
-                                    id: _btn
-                                    padding: 10
-                                    font.pointSize: 9
-                                    font.family: "Hack"
-                                    font.weight: Font.Light
-                                    font.letterSpacing: 1
-                                    text: lowpassId.controller.ctrl.value > 100 ? qsTr("LowPass 24dB") : qsTr("HiPass 12dB")
+                                Zynthian.AbstractController {
+                                    id: lowpassId
+                                    implicitWidth: 200
+                                    implicitHeight: 60
+                                    Layout.fillWidth: true
+                                    Layout.preferredHeight: 60
+                                    Layout.maximumHeight: 60
+                                    Layout.alignment: Qt.AlignHCenter
+                                    title: qsTr("Lowpass")
 
-                                    onClicked: lowpassId.controller.ctrl.value = checked ? lowpassId.controller.ctrl.max_value : lowpassId.controller.ctrl.value0
-                                    checked: lowpassId.controller.ctrl && lowpassId.controller.ctrl.value !== lowpassId.controller.ctrl.value0
-                                    background: Item {
+                                    property int ctrlval: controller.ctrl.value
+                                    controller {
+                                        category: "Ctrls#13"
+                                        index: 2
+                                    }
 
-                                        Rectangle {
-                                            id: _recBtn
-                                            radius: height/2
-                                            anchors.fill: parent
-                                            visible: false
-                                            color: _btn.checked?  "#5765f2" : "#333"
+                                    background: null
+                                    control:  QQC2.Button {
+                                        id: _btn
+                                        padding: 10
+                                        font.pointSize: 9
+                                        font.family: "Hack"
+                                        font.weight: Font.Light
+                                        font.letterSpacing: 1
+                                        text: lowpassId.controller.ctrl.value > 100 ? qsTr("LowPass 24dB") : qsTr("HiPass 12dB")
 
-                                        }
-                                        InnerShadow {
-                                            anchors.fill: _recBtn
-                                            radius: 8.0
-                                            samples: 16
-                                            horizontalOffset: -3
-                                            verticalOffset: 3
-                                            color: "#b0000000"
-                                            source: _recBtn
-                                        }
-                                        Rectangle {
-                                            anchors.fill: parent
-                                            color: "transparent"
-                                            border.color: Qt.darker("#16171C", 2)
-                                            radius: height/2
+                                        onClicked: lowpassId.controller.ctrl.value = checked ? lowpassId.controller.ctrl.max_value : lowpassId.controller.ctrl.value0
+                                        checked: lowpassId.controller.ctrl && lowpassId.controller.ctrl.value !== lowpassId.controller.ctrl.value0
+                                        background: Item {
 
                                             Rectangle {
+                                                id: _recBtn
+                                                radius: height/2
                                                 anchors.fill: parent
-                                                border.color: Qt.lighter("#333", 1.8)
-                                                border.width: 2
-                                                anchors.margins: 1
-                                                opacity: 0.4
+                                                visible: false
+                                                color: _btn.checked?  "#5765f2" : "#333"
+
+                                            }
+                                            InnerShadow {
+                                                anchors.fill: _recBtn
+                                                radius: 8.0
+                                                samples: 16
+                                                horizontalOffset: -3
+                                                verticalOffset: 3
+                                                color: "#b0000000"
+                                                source: _recBtn
+                                            }
+                                            Rectangle {
+                                                anchors.fill: parent
                                                 color: "transparent"
+                                                border.color: Qt.darker("#16171C", 2)
                                                 radius: height/2
 
-                                                RadialGradient {
-                                                    visible: _btn.checked
+                                                Rectangle {
                                                     anchors.fill: parent
-                                                    gradient: Gradient {
-                                                        GradientStop { position: 0.0; color: "#b5bbe4" }
-                                                        GradientStop { position: 0.5; color: "transparent" }
+                                                    border.color: Qt.lighter("#333", 1.8)
+                                                    border.width: 2
+                                                    anchors.margins: 1
+                                                    opacity: 0.4
+                                                    color: "transparent"
+                                                    radius: height/2
+
+                                                    RadialGradient {
+                                                        visible: _btn.checked
+                                                        anchors.fill: parent
+                                                        gradient: Gradient {
+                                                            GradientStop { position: 0.0; color: "#b5bbe4" }
+                                                            GradientStop { position: 0.5; color: "transparent" }
+                                                        }
                                                     }
                                                 }
                                             }
+
+
                                         }
-
-
                                     }
                                 }
                             }
@@ -226,14 +234,12 @@ Item {
                                 Layout.alignment: Qt.AlignCenter
                                 Layout.fillHeight: true
                                 Layout.fillWidth: true
-                                implicitWidth: height
                                 controller {
                                     category: "Ctrls#12"
                                     index: 0
                                 }
                             }
                         }
-
                     }
 
                     Item {
@@ -241,15 +247,35 @@ Item {
                         Layout.fillHeight: true
                         Layout.margins: 5
 
-                        Here.SliderControl {
+                        RowLayout {
+                            anchors.fill: parent
+                            spacing: 5
+                            Here.SliderControl {
+                                objectName: "AmpAttack"
+                                Layout.fillHeight: true
+                                Layout.fillWidth: true
+                                slider.orientation: Qt.Vertical
 
-                            height: parent.height
-                            width: parent.width
-                            controller {
-                                category: "Ctrls#14"
-                                index: 2
+                                controller {
+                                    category: "Ctrls#13"
+                                    index: 3
+                                }
+                            }
+
+                            Here.SliderControl {
+                                objectName: "AmpRelease"
+                                Layout.fillHeight: true
+                                Layout.fillWidth: true
+                                slider.orientation: Qt.Vertical
+
+                                controller {
+                                    category: "Ctrls#14"
+                                    index: 2
+                                }
                             }
                         }
+
+
                     }
                 }
             }

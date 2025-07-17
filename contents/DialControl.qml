@@ -153,7 +153,7 @@ Zynthian.AbstractController {
                             Rectangle {
                                 id: indicator
                                 width: 5
-                                height: 20
+                                height: _container.height * 0.12
                                 radius: width / 2
                                 color: "#5765f2"
                                 border.color: "#5765f2"
@@ -176,7 +176,7 @@ Zynthian.AbstractController {
                     Rectangle {
                         id: _innerRect
                         anchors.fill: parent
-                        anchors.margins: 28
+                        anchors.margins: ( _container.height * 0.12) + 8
                         color: "#16171C"
                         radius: width/2
                         border.color: dial.pressed ? "#5765f2" : Qt.darker(color, 2)
@@ -223,7 +223,7 @@ Zynthian.AbstractController {
                                     radius: 8.0
                                     samples: 16
                                     horizontalOffset: 1
-                                    verticalOffset: 3
+                                    verticalOffset: -3
                                     color: "#b0000000"
                                     source: _recLabel
                                 }
