@@ -242,8 +242,8 @@ Zynthian.AbstractController {
                     anchors.fill: _recLabel
                     radius: 8.0
                     samples: 16
-                    horizontalOffset: 1
-                    verticalOffset: -3
+                    horizontalOffset: -3
+                    verticalOffset: 1
                     color: "#b0000000"
                     source: _recLabel
                 }
