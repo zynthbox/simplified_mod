@@ -134,6 +134,16 @@ Item {
                             anchors.fill: parent
                             spacing: 5
 
+                            Here.DialControl {
+                                Layout.alignment: Qt.AlignCenter
+                                Layout.fillHeight: true
+                                Layout.fillWidth: true
+                                controller {
+                                    category: "Ctrls#12"
+                                    index: 0
+                                }
+                            }
+
                             RowLayout {
                                 Layout.fillWidth: true
                                 Layout.preferredHeight: 150
@@ -227,16 +237,6 @@ Item {
 
                                         }
                                     }
-                                }
-                            }
-
-                            Here.DialControl {
-                                Layout.alignment: Qt.AlignCenter
-                                Layout.fillHeight: true
-                                Layout.fillWidth: true
-                                controller {
-                                    category: "Ctrls#12"
-                                    index: 0
                                 }
                             }
                         }
