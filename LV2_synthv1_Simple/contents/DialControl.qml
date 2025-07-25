@@ -53,7 +53,9 @@ Zynthian.AbstractController {
     padding: 5
 
     background: null
-    title: ""
+    title: root.controller.ctrl ? root.controller.ctrl.title : ""
+
+    opacity: enabled ? 1 : 0.7
 
     contentItem:  Item {
 
@@ -64,7 +66,7 @@ Zynthian.AbstractController {
             QQC2.Label {
                 Layout.fillWidth: true
                 horizontalAlignment: Text.AlignHCenter
-                text: root.controller.ctrl ? root.controller.ctrl.title : ""
+                text: root.title
                 font.capitalization: Font.AllUppercase
                 font.weight: Font.DemiBold
                 font.family: "Hack"
@@ -160,7 +162,7 @@ Zynthian.AbstractController {
                                 width: 5
                                 height: _container.height * 0.12
                                 radius: width / 2
-                                color: root.highlightColor
+                                color: enabled ? root.highlightColor : root.alternativeColor
                                 border.color: root.highlightColor
                                 opacity: indicator.angle > (dial.angle) ? 0.2 : 1
                                 readonly property real angle: index * (360/Math.round(_container.width/4)) + (-140)

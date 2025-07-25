@@ -28,45 +28,33 @@ import QtQuick.Layouts 1.4
 import QtQuick.Controls 2.2 as QQC2
 import org.kde.kirigami 2.4 as Kirigami
 
-import Zynthian 1.0 as Zynthian
 
-GridLayout {
-    columns: 2
+QtObject {
+    id: root
+    property string category
+    property int index: -1
+    property QtObject ctrl
 
-    // o1mix
-    Zynthian.SliderController {
-        controller {
-            category: "Ctrls#11"
-            index: 1
-        }
-        valueLabel: Math.round(value / 2)
-    }
-    // o2mix
-    Zynthian.SliderController {
-        controller {
-            category: "Ctrls#11"
-            index: 2
-        }
-        valueLabel: Math.round(value / 2)
-    }
+    onCategoryChanged: internal.syncCtrl()
+    onIndexChanged: internal.syncCtrl()
+    Component.onCompleted: internal.syncCtrl()
 
-    
-    // noisemix
-    Zynthian.SliderController {
-        controller {
-            category: "Ctrls#11"
-            index: 3
+    property Connections _internal: Connections {
+        id: internal
+        function syncCtrl() {
+            if (index < 0) {
+                return;
+            }
+            if (category.length > 0 && category.indexOf("amixer_") === 0) {
+                root.ctrl = zynqtgui.control.amixer_controller_by_category(root.category.substring(7), root.index);
+                print(root.ctrl)
+            } else if (category.length > 0) {
+                root.ctrl = zynqtgui.control.controller_by_category(root.category, root.index);
+            } else {
+                root.ctrl = zynqtgui.control.controller(root.index);
+            }
         }
-        valueLabel: Math.round(value / 2)
+        target: zynqtgui.control
+        onControllers_changed: syncCtrl()
     }
-    // brightness
-    Zynthian.SliderController {
-        controller {
-            category: "Ctrls#10"
-            index: 3
-        }
-        valueLabel: Math.round(value / 2)
-    }
-
 }
-
