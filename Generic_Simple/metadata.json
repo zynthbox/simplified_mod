@@ -1,0 +1,12 @@
+{
+    "Engine": "",
+    "Engines": [
+        "JV/synthv1",
+        "JV/Nekobi",
+        "JV/Calf Monosynth",
+        "JV/Noize Mak3r",
+        "JV/Helm",
+        "JV/Obxd",
+        "JV/Surge"],
+    "Name" : "Generic Simple YAY!"
+}
