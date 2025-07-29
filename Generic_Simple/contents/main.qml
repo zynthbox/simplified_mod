@@ -59,6 +59,13 @@ Item {
             'filterRelease': ['Ctrls#8|0'],
             'ampAttack': ['Ctrls#1|1'],
             'ampRelease': ['Ctrls#1|3']},
+        'padthv1': {
+            'cutoff': ['PADsynth - DCF1#1|1'],
+            'resonance': ['PADsynth - DCF1#1|2'],
+            'filterAttack': ['PADsynth - DCF1#2|2'],
+            'filterRelease': ['PADsynth - DCF1#3|1'],
+            'ampAttack': ['PADsynth - DCA1#1|1'],
+            'ampRelease': ['PADsynth - DCA1#2|0']},
         'Nekobi': {
             'cutoff': ['Ctrls#1|2'],
             'resonance': ['Ctrls#1|3'],
@@ -108,7 +115,7 @@ Item {
                     Layout.fillWidth: true
                     QQC2.Label {
 
-                        text: "Generic"
+                        text: "Simplified"
                         font.capitalization: Font.AllUppercase
                         font.weight: Font.ExtraBold
                         font.family: "Hack"
@@ -271,18 +278,18 @@ Item {
                                     }
                                 }
 
-                                Here.DialControl {
-                                    enabled: false
-                                    objectName: "FilterType"
-                                    Layout.fillHeight: true
-                                    Layout.fillWidth: true
-                                    implicitWidth: height
-                                    highlightColor: "#de20ff"
-                                    controller {
-                                        category: "Synth 1 - DCF1#2"
-                                        index: 2
-                                    }
-                                }
+                                // Here.DialControl {
+                                //     enabled: false
+                                //     objectName: "FilterType"
+                                //     Layout.fillHeight: true
+                                //     Layout.fillWidth: true
+                                //     implicitWidth: height
+                                //     highlightColor: "#de20ff"
+                                //     controller {
+                                //         category: "Synth 1 - DCF1#2"
+                                //         index: 2
+                                //     }
+                                // }
                             }
                         }
 

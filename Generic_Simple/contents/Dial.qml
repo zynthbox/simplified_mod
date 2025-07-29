@@ -32,7 +32,6 @@ import "." as Here
 import QtGraphicalEffects 1.15
 
 
-
 QQC2.Dial {
 
     id: dial
@@ -47,50 +46,24 @@ QQC2.Dial {
 
     property alias text : _label1.text
 
-    inputMode: QQC2.Dial.Vertical
-
-    // property bool shouldClick: false
-    // property var mostRecentClickTime: 0
-
-    // onMoved: {
-    //     shouldClick = false;
-    //     if (root.controller && root.controller.ctrl) {
-    //         root.controller.ctrl.value = value;
-    //     }
-    // }
-    // onPressedChanged: {
-    //     if (pressed) {
-    //         shouldClick = true;
-    //     } else {
-    //         shouldClick = false;
-    //         let thisClickTime = Date.now();
-    //         if (thisClickTime - mostRecentClickTime < 300) {
-    //             if (root.controller && root.controller.ctrl) {
-    //                 root.controller.ctrl.value = root.controller.ctrl.value_default;
-    //             }
-    //             root.doubleClicked();
-    //         } else {
-    //             root.clicked();
-    //         }
-    //         mostRecentClickTime = thisClickTime;
-    //     }
-    //     root.pressedChanged(pressed);
-    // }
+    inputMode: QQC2.Dial.Circular
 
     handle: Rectangle {
         id: handleItem
         x: dial.background.x + dial.background.width / 2 - width / 2
         y: dial.background.y + dial.background.height / 2 - height / 2
-        width: 8
-        height: dial.background.height* 0.12
-        color: dial.pressed ?  dial.highlightColor : dial.foregroundColor
+        width: 36
+        height: (_container.height * 0.12)+ 16
+
+        radius: 6
+        color: dial.backgroundColor
         border.color: Qt.darker(dial.alternativeColor, 2)
-        radius: 8
+
         antialiasing: true
         opacity: dial.enabled ? 1 : 0.3
         transform: [
             Translate {
-                y: -Math.min(dial.background.width, dial.background.height) * 0.35 + handleItem.height / 2
+                y: -Math.min(dial.background.width/2, dial.background.height/2) + handleItem.height / 2 - 4
             },
             Rotation {
                 angle: dial.angle
@@ -98,6 +71,24 @@ QQC2.Dial {
                 origin.y: handleItem.height / 2
             }
         ]
+
+        Rectangle {
+            height: _container.height * 0.12
+            width: 5
+            radius: 5
+            anchors.centerIn: parent
+
+            color: dial.highlightColor
+        }
+
+        layer.enabled: !dial.pressed
+        layer.effect: DropShadow {
+            horizontalOffset: 0
+            verticalOffset: 0
+            radius: 8.0
+            samples: 17
+            color: "#80000000"
+        }
     }
 
     background: Rectangle {
