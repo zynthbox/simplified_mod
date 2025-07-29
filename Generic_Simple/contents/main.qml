@@ -59,6 +59,20 @@ Item {
             'filterRelease': ['Ctrls#8|0'],
             'ampAttack': ['Ctrls#1|1'],
             'ampRelease': ['Ctrls#1|3']},
+        'ZynAddSubFX': {
+            'cutoff': ['main|2'],
+            'resonance': ['main|3'],
+            'filterAttack': [],
+            'filterRelease': [],
+            'ampAttack': [],
+            'ampRelease': []},
+        'String machine': {
+            'cutoff': [],
+            'resonance': [],
+            'filterAttack': [],
+            'filterRelease': [],
+            'ampAttack': [],
+            'ampRelease': []},
         'padthv1': {
             'cutoff': ['PADsynth - DCF1#1|1'],
             'resonance': ['PADsynth - DCF1#1|2'],
@@ -77,6 +91,13 @@ Item {
             'filterRelease': ['Ctrls#3|2'],
             'ampAttack': ['Ctrls#3|3'],
             'ampRelease': ['Ctrls#4|2']},
+        'Raffo Synth': {
+            'cutoff': ['Filter & vol - ctrl|0'],
+            'resonance': ['Filter & vol - ctrl|2'],
+            'filterAttack' : ['Filter - env|0'],
+            'filterRelease': ['Filter - env|3'],
+            'ampAttack': ['Amp - env|0'],
+            'ampRelease': ['Amp - env|3']},
         'Surge': {
             'cutoff': ['Ctrls#51|0', 'Ctrls#52|2','Ctrls#118|3','Ctrls#120|1'],
             'resonance': ['Ctrls#51|1', 'Ctrls#53|0','Ctrls#119|0','Ctrls#120|3'],
@@ -91,7 +112,7 @@ Item {
     QQC2.Control {
 
         anchors.fill: parent
-        padding: 20
+        padding: 10
 
         background: Item {
             PlasmaCore.FrameSvgItem {
@@ -256,7 +277,7 @@ Item {
 
                                 Here.MultiController {
                                     id: _multiResController
-                                    title: "Res"
+                                    title: "Resonance"
                                     Layout.alignment: Qt.AlignCenter
                                     Layout.fillHeight: true
                                     Layout.fillWidth: true
@@ -292,37 +313,6 @@ Item {
                                 // }
                             }
                         }
-
-                        // RowLayout {
-                        //     Layout.fillWidth: true
-                        //     Layout.preferredHeight: 150
-                        //     Layout.maximumHeight: 150
-
-                        //     Here.DialControl {
-                        //         objectName: "Resonance"
-                        //         Layout.fillHeight: true
-                        //         Layout.fillWidth: true
-                        //         implicitWidth: height
-                        //         // highlightColor: "#ff8113"
-                        //         controller {
-                        //             category: "Ctrls#21"
-                        //             index: 2
-                        //         }
-                        //     }
-
-                        //     // Here.DialControl {
-                        //     //     objectName: "FilterType"
-                        //     //     Layout.fillHeight: true
-                        //     //     Layout.fillWidth: true
-                        //     //     implicitWidth: height
-                        //     //     highlightColor: "#de20ff"
-                        //     //     controller {
-                        //     //         category: "Synth 1 - DCF1#1"
-                        //     //         index: 3
-                        //     //     }
-                        //     // }
-                        // }
-                        // }
                     }
 
                     Item {
