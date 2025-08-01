@@ -61,15 +61,12 @@ QQC2.Control {
 
         delegate: Item {
             id:  controlRoot
-            objectName: "Controller#"+index
-            property string category : modelData.split("|")[0]
-            property int cindex : modelData.split("|")[1]
-            property int mindex: index
+            objectName: "Controller#"+symbol
+            property string symbol : modelData
 
             Here.ControllerGroup {
                 id: controller
-                category: controlRoot.category
-                index: controlRoot.cindex
+                symbol: controlRoot.symbol
             }
 
             readonly property var value : controller.ctrl.value
@@ -195,6 +192,9 @@ QQC2.Control {
                             color: root.foregroundColor
                             text:  obj.ctrl.title + " : " + obj.ctrl.value.toFixed(2) + " | " + (obj.ctrl.value/obj.ctrl.max_value).toFixed(2)
                             font.pointSize: 6
+                            fontSizeMode: Text.Fit
+                            minimumPointSize: 4
+                            wrapMode: Text.NoWrap
                         }
                     }
                 }

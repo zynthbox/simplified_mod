@@ -1,16 +1,16 @@
 {
     "Engine": "",
     "Engines": [
-        "JV/synthv1",
-        "JV/Nekobi",
-        "ZY",
-        "JV/Calf Monosynth",
-        "JV/String machine",
-        "JV/Noize Mak3r",
-        "JV/Raffo Synth",
-        "JV/Helm",
-        "JV/padthv1",
-        "JV/Obxd",
-        "JV/Surge"],
+        "ZBP_SYNTH_00008",
+        "ZBP_SYNTH_00001",
+        "ZBP_SYNTH_00011",
+        "ZBP_SYNTH_00000",
+        "ZBP_SYNTH_00003",
+        "ZBP_SYNTH_00004",
+        "ZBP_SYNTH_00002",
+        "ZBP_SYNTH_00009",
+        "ZBP_SYNTH_00006",
+        "ZBP_SYNTH_00013",
+        "ZBP_SYNTH_00012"],
     "Name" : "Simplified"
 }

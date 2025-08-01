@@ -39,74 +39,76 @@ Item {
 
     readonly property var synthMap : {
         'synthv1': {
-            'cutoff': ['Synth 1 - DCF1#1|1','Synth 2 - DCF2#1|1'],
-            'resonance': ['Synth 1 - DCF1#1|2','Synth 2 - DCF2#1|2'],
-            'filterAttack' : ['Synth 1 - DCF1#2|2', 'Synth 2 - DCF2#2|2'],
-            'filterRelease' : ['Synth 1 - DCF1#3|1', 'Synth 2 - DCF2#3|1'],
-            'ampAttack' : ['Synth 1 - DCA1#1|1', 'Synth 2 - DCA2#1|1'],
-            'ampRelease' : ['Synth 1 - DCA1#2|0', 'Synth 2 - DCA2#2|0']},
+            'cutoff': ["DCF1_CUTOFF","DCF2_CUTOFF"],
+            'resonance': ['DCF1_RESO','DCF2_RESO'],
+            'filterAttack' : ['DCF1_ATTACK', 'DCF2_ATTACK'],
+            'filterRelease' : ['DCF1_RELEASE', 'DCF2_RELEASE'],
+            'ampAttack' : ['DCA1_ATTACK', 'DCA2_ATTACK'],
+            'ampRelease' : ['DCA1_RELEASE', 'DCA2_RELEASE']},
         'Obxd': {
-            'cutoff': ['Ctrls#12|0'],
-            'resonance': ['Ctrls#12|1'],
-            'filterAttack': ['Ctrls#14|3'],
-            'filterRelease': ['Ctrls#15|2'],
-            'ampAttack': ['Ctrls#13|3'],
-            'ampRelease': ['Ctrls#14|2']},
+            'cutoff':  ["cutoff"],
+            'resonance': ['resonance'],
+            'filterAttack': ['filterattack'],
+            'filterRelease': ['filterrelease'],
+            'ampAttack': ['attack'],
+            'ampRelease': ['release']},
         'Helm': {
-            'cutoff': ['Ctrls#4|2'],
-            'resonance': ['Ctrls#21|2'],
-            'filterAttack': ['Ctrls#7|1'],
-            'filterRelease': ['Ctrls#8|0'],
-            'ampAttack': ['Ctrls#1|1'],
-            'ampRelease': ['Ctrls#1|3']},
+            'cutoff':  ["cutoff"],
+            'resonance': ['resonance'],
+            'filterAttack': ['fil_attack'],
+            'filterRelease': ['fil_release'],
+            'ampAttack': ['amp_attack'],
+            'ampRelease': ['amp_release']},
         'ZynAddSubFX': {
-            'cutoff': ['main|2'],
-            'resonance': ['main|3'],
+            'cutoff': ["filter cutoff"],
+            'resonance': ['filter resonance'],
             'filterAttack': [],
             'filterRelease': [],
             'ampAttack': [],
             'ampRelease': []},
         'String machine': {
-            'cutoff': [],
+            'cutoff': ["flt_hp_cutoff_upper", "flt_hp_cutoff_lower"],
             'resonance': [],
             'filterAttack': [],
             'filterRelease': [],
             'ampAttack': [],
             'ampRelease': []},
         'padthv1': {
-            'cutoff': ['PADsynth - DCF1#1|1'],
-            'resonance': ['PADsynth - DCF1#1|2'],
-            'filterAttack': ['PADsynth - DCF1#2|2'],
-            'filterRelease': ['PADsynth - DCF1#3|1'],
-            'ampAttack': ['PADsynth - DCA1#1|1'],
-            'ampRelease': ['PADsynth - DCA1#2|0']},
+            'cutoff': ["DCF1_CUTOFF"],
+            'resonance': ['DCF1_RESO'],
+            'filterAttack': ['DCF1_ATTACK'],
+            'filterRelease': ['DCF1_RELEASE'],
+            'ampAttack': ['DCA1_ATTACK'],
+            'ampRelease': ['DCA1_RELEASE']},
         'Nekobi': {
-            'cutoff': ['Ctrls#1|2'],
-            'resonance': ['Ctrls#1|3'],
+            'cutoff':  ["cutoff"],
+            'resonance': ['resonance'],
             'filterAttack' : []},
         'Noize Mak3r': {
-            'cutoff': ['Ctrls#1|3'],
-            'resonance': ['Ctrls#2|0'],
-            'filterAttack' : ['Ctrls#2|3'],
-            'filterRelease': ['Ctrls#3|2'],
-            'ampAttack': ['Ctrls#3|3'],
-            'ampRelease': ['Ctrls#4|2']},
+            'cutoff':  ["cutoff"],
+            'resonance': ['resonance'],
+            'filterAttack' : ['filterattack'],
+            'filterRelease': ['filterrelease'],
+            'ampAttack': ['ampattack'],
+            'ampRelease': ['amprelease']},
         'Raffo Synth': {
-            'cutoff': ['Filter & vol - ctrl|0'],
-            'resonance': ['Filter & vol - ctrl|2'],
-            'filterAttack' : ['Filter - env|0'],
-            'filterRelease': ['Filter - env|3'],
-            'ampAttack': ['Amp - env|0'],
-            'ampRelease': ['Amp - env|3']},
+            'cutoff': ["filter_cutoff"],
+            'resonance': ['filter_resonance'],
+            'filterAttack' : ['filter_attack'],
+            'filterRelease': ['filter_release'],
+            'ampAttack': ['attack'],
+            'ampRelease': ['release']},
         'Surge': {
-            'cutoff': ['Ctrls#51|0', 'Ctrls#52|2','Ctrls#118|3','Ctrls#120|1'],
-            'resonance': ['Ctrls#51|1', 'Ctrls#53|0','Ctrls#119|0','Ctrls#120|3'],
+            'cutoff': ["a_filter1_cutoff","a_filter2_cutoff","b_filter1_cutoff","b_filter2_cutoff"],
+            'resonance': ['a_filter1_resonance', 'a_filter2_resonance','b_filter1_resonance','b_filter2_resonance'],
             'filterAttack' : []},
         'Calf Monosynth': {
-            'cutoff': ['Ctrls#3|1'],
-            'resonance': ['Ctrls#3|2'],
-            'filterAttack' : ['Ctrls#4|3'],
-            'filterRelease' : ['Ctrls#11|0']}
+            'cutoff': ["cutoff"],
+            'resonance': ['res'],
+            'filterAttack' : [],
+            'filterRelease' : [],
+            'ampAttack': ['adsr_a', 'adsr2_a'],
+            'ampRelease': ['adsr_r', 'adsr2_r']}
     }
 
     QQC2.Control {
@@ -297,20 +299,7 @@ Item {
                                         value: _multiResController.value
                                         onMoved:_multiResController.setValue(value)
                                     }
-                                }
-
-                                // Here.DialControl {
-                                //     enabled: false
-                                //     objectName: "FilterType"
-                                //     Layout.fillHeight: true
-                                //     Layout.fillWidth: true
-                                //     implicitWidth: height
-                                //     highlightColor: "#de20ff"
-                                //     controller {
-                                //         category: "Synth 1 - DCF1#2"
-                                //         index: 2
-                                //     }
-                                // }
+                                }                                
                             }
                         }
                     }
