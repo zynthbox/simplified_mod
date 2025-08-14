@@ -43,6 +43,7 @@ Item {
             'resonance': ['DCF1_RESO','DCF2_RESO'],
             'filterAttack' : ['DCF1_ATTACK', 'DCF2_ATTACK'],
             'filterRelease' : ['DCF1_RELEASE', 'DCF2_RELEASE'],
+            'filterType' : ['DCF1_TYPE', 'DCF2_TYPE'],
             'ampAttack' : ['DCA1_ATTACK', 'DCA2_ATTACK'],
             'ampRelease' : ['DCA1_RELEASE', 'DCA2_RELEASE']},
         'Obxd': {
@@ -50,6 +51,7 @@ Item {
             'resonance': ['resonance'],
             'filterAttack': ['filterattack'],
             'filterRelease': ['filterrelease'],
+            'filterType' : ['filterenvamount'],
             'ampAttack': ['attack'],
             'ampRelease': ['release']},
         'Helm': {
@@ -57,6 +59,7 @@ Item {
             'resonance': ['resonance'],
             'filterAttack': ['fil_attack'],
             'filterRelease': ['fil_release'],
+            'filterType' : [],
             'ampAttack': ['amp_attack'],
             'ampRelease': ['amp_release']},
         'ZynAddSubFX': {
@@ -64,6 +67,7 @@ Item {
             'resonance': ['filter resonance'],
             'filterAttack': [],
             'filterRelease': [],
+            'filterType' : [],
             'ampAttack': [],
             'ampRelease': []},
         'String machine': {
@@ -71,6 +75,7 @@ Item {
             'resonance': [],
             'filterAttack': [],
             'filterRelease': [],
+            'filterType' : [],
             'ampAttack': [],
             'ampRelease': []},
         'padthv1': {
@@ -78,17 +83,20 @@ Item {
             'resonance': ['DCF1_RESO'],
             'filterAttack': ['DCF1_ATTACK'],
             'filterRelease': ['DCF1_RELEASE'],
+            'filterType' : ['DCF1_TYPE'],
             'ampAttack': ['DCA1_ATTACK'],
             'ampRelease': ['DCA1_RELEASE']},
         'Nekobi': {
             'cutoff':  ["cutoff"],
             'resonance': ['resonance'],
+            'filterType' : [],
             'filterAttack' : []},
         'Noize Mak3r': {
             'cutoff':  ["cutoff"],
             'resonance': ['resonance'],
             'filterAttack' : ['filterattack'],
             'filterRelease': ['filterrelease'],
+            'filterType' : ['filtertype'],
             'ampAttack': ['ampattack'],
             'ampRelease': ['amprelease']},
         'Raffo Synth': {
@@ -96,17 +104,21 @@ Item {
             'resonance': ['filter_resonance'],
             'filterAttack' : ['filter_attack'],
             'filterRelease': ['filter_release'],
+            'filterType' : [],
             'ampAttack': ['attack'],
             'ampRelease': ['release']},
         'Surge': {
             'cutoff': ["a_filter1_cutoff","a_filter2_cutoff","b_filter1_cutoff","b_filter2_cutoff"],
             'resonance': ['a_filter1_resonance', 'a_filter2_resonance','b_filter1_resonance','b_filter2_resonance'],
-            'filterAttack' : []},
+            'filterType' : ['a_filter1_type', 'a_filter2_type', 'b_filter1_type', 'b_filter2_type'],
+            'filterAttack' : ['a_env1_attack', 'a_env2_attack'],
+            'filterRelease' : ['a_env1_release', 'a_env2_release']},
         'Calf Monosynth': {
             'cutoff': ["cutoff"],
             'resonance': ['res'],
             'filterAttack' : [],
             'filterRelease' : [],
+            'filterType' : ['filter'],
             'ampAttack': ['adsr_a', 'adsr2_a'],
             'ampRelease': ['adsr_r', 'adsr2_r']}
     }
@@ -299,7 +311,32 @@ Item {
                                         value: _multiResController.value
                                         onMoved:_multiResController.setValue(value)
                                     }
-                                }                                
+                                }
+
+                                Here.FilterTypeController {
+                                    id: _multiTypeController
+                                    title: "Type"
+                                    Layout.alignment: Qt.AlignCenter
+                                    Layout.fillHeight: true
+                                    Layout.fillWidth: true
+                                    highlighted : _typeDial.pressed
+                                    controllersIds: root.synthMap[zynqtgui.curlayerEngineName].filterType ? root.synthMap[zynqtgui.curlayerEngineName].filterType : []
+                                    debugMode: root.debugMode
+
+                                    Here.Dial {
+                                        id: _typeDial
+                                        Layout.fillHeight: true
+                                        implicitWidth: height
+                                        Layout.alignment: Qt.AlignCenter
+                                        // orientation: Qt.Vertical
+                                        highlightColor: _multiTypeController.highlightColor
+                                        from:_multiTypeController.from
+                                        to:_multiTypeController.to
+                                        value: _multiTypeController.value
+                                        stepSize: _multiTypeController.stepSize
+                                        onMoved:_multiTypeController.setValue(value)
+                                    }
+                                }
                             }
                         }
                     }
