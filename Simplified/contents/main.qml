@@ -38,7 +38,7 @@ Item {
     property bool debugMode: false
 
     readonly property var synthMap : {
-        'synthv1': {
+        'ZBP_SYNTH_00008': {
             'cutoff': ["DCF1_CUTOFF","DCF2_CUTOFF"],
             'resonance': ['DCF1_RESO','DCF2_RESO'],
             'filterAttack' : ['DCF1_ATTACK', 'DCF2_ATTACK'],
@@ -46,7 +46,7 @@ Item {
             'filterType' : ['DCF1_TYPE', 'DCF2_TYPE'],
             'ampAttack' : ['DCA1_ATTACK', 'DCA2_ATTACK'],
             'ampRelease' : ['DCA1_RELEASE', 'DCA2_RELEASE']},
-        'Obxd': {
+        'ZBP_SYNTH_00012': {
             'cutoff':  ["cutoff"],
             'resonance': ['resonance'],
             'filterAttack': ['filterattack'],
@@ -54,7 +54,7 @@ Item {
             'filterType' : ['filterenvamount'],
             'ampAttack': ['attack'],
             'ampRelease': ['release']},
-        'Helm': {
+        'ZBP_SYNTH_00009': {
             'cutoff':  ["cutoff"],
             'resonance': ['resonance'],
             'filterAttack': ['fil_attack'],
@@ -62,7 +62,7 @@ Item {
             'filterType' : [],
             'ampAttack': ['amp_attack'],
             'ampRelease': ['amp_release']},
-        'ZynAddSubFX': {
+        'ZBP_SYNTH_00011': {
             'cutoff': ["filter cutoff"],
             'resonance': ['filter resonance'],
             'filterAttack': [],
@@ -70,7 +70,7 @@ Item {
             'filterType' : [],
             'ampAttack': [],
             'ampRelease': []},
-        'String machine': {
+        'ZBP_SYNTH_00003': {
             'cutoff': ["flt_hp_cutoff_upper", "flt_hp_cutoff_lower"],
             'resonance': [],
             'filterAttack': [],
@@ -78,7 +78,7 @@ Item {
             'filterType' : [],
             'ampAttack': [],
             'ampRelease': []},
-        'padthv1': {
+        'ZBP_SYNTH_00006': {
             'cutoff': ["DCF1_CUTOFF"],
             'resonance': ['DCF1_RESO'],
             'filterAttack': ['DCF1_ATTACK'],
@@ -86,12 +86,12 @@ Item {
             'filterType' : ['DCF1_TYPE'],
             'ampAttack': ['DCA1_ATTACK'],
             'ampRelease': ['DCA1_RELEASE']},
-        'Nekobi': {
+        'ZBP_SYNTH_00001': {
             'cutoff':  ["cutoff"],
             'resonance': ['resonance'],
             'filterType' : [],
             'filterAttack' : []},
-        'Noize Mak3r': {
+        'ZBP_SYNTH_00004': {
             'cutoff':  ["cutoff"],
             'resonance': ['resonance'],
             'filterAttack' : ['filterattack'],
@@ -99,7 +99,7 @@ Item {
             'filterType' : ['filtertype'],
             'ampAttack': ['ampattack'],
             'ampRelease': ['amprelease']},
-        'Raffo Synth': {
+        'ZBP_SYNTH_00002': {
             'cutoff': ["filter_cutoff"],
             'resonance': ['filter_resonance'],
             'filterAttack' : ['filter_attack'],
@@ -107,13 +107,13 @@ Item {
             'filterType' : [],
             'ampAttack': ['attack'],
             'ampRelease': ['release']},
-        'Surge': {
+        'ZBP_SYNTH_00013': {
             'cutoff': ["a_filter1_cutoff","a_filter2_cutoff","b_filter1_cutoff","b_filter2_cutoff"],
             'resonance': ['a_filter1_resonance', 'a_filter2_resonance','b_filter1_resonance','b_filter2_resonance'],
             'filterType' : ['a_filter1_type', 'a_filter2_type', 'b_filter1_type', 'b_filter2_type'],
             'filterAttack' : ['a_env1_attack', 'a_env2_attack'],
             'filterRelease' : ['a_env1_release', 'a_env2_release']},
-        'Calf Monosynth': {
+        'ZBP_SYNTH_00000': {
             'cutoff': ["cutoff"],
             'resonance': ['res'],
             'filterAttack' : [],
@@ -124,7 +124,7 @@ Item {
     }
 
     QQC2.Control {
-
+        enabled: zynqtgui.curlayerEngineId != null
         anchors.fill: parent
         padding: 10
 
@@ -199,7 +199,7 @@ Item {
                                 Layout.fillWidth: true
                                 Layout.fillHeight: true
                                 highlighted : _slider.pressed
-                                controllersIds: zynqtgui.curlayerEngineName != null && root.synthMap[zynqtgui.curlayerEngineName] != null && root.synthMap[zynqtgui.curlayerEngineName].filterAttack ? root.synthMap[zynqtgui.curlayerEngineName].filterAttack : []
+                                controllersIds: zynqtgui.curlayerEngineId != null && root.synthMap[zynqtgui.curlayerEngineId] != null && root.synthMap[zynqtgui.curlayerEngineId].filterAttack ? root.synthMap[zynqtgui.curlayerEngineId].filterAttack : []
 
                                 Here.Slider {
                                     id: _slider
@@ -222,7 +222,7 @@ Item {
                                 Layout.fillWidth: true
                                 Layout.fillHeight: true
                                 highlighted : _sliderFRel.pressed
-                                controllersIds: zynqtgui.curlayerEngineName != null && root.synthMap[zynqtgui.curlayerEngineName] != null && root.synthMap[zynqtgui.curlayerEngineName].filterRelease ? root.synthMap[zynqtgui.curlayerEngineName].filterRelease : []
+                                controllersIds: zynqtgui.curlayerEngineId != null && root.synthMap[zynqtgui.curlayerEngineId] != null && root.synthMap[zynqtgui.curlayerEngineId].filterRelease ? root.synthMap[zynqtgui.curlayerEngineId].filterRelease : []
                                 debugMode: root.debugMode
 
                                 Here.Slider {
@@ -258,7 +258,7 @@ Item {
                                 Layout.alignment: Qt.AlignCenter
                                 Layout.fillHeight: true
                                 Layout.fillWidth: true
-                                controllersIds: zynqtgui.curlayerEngineName != null && root.synthMap[zynqtgui.curlayerEngineName] != null && root.synthMap[zynqtgui.curlayerEngineName].cutoff ? root.synthMap[zynqtgui.curlayerEngineName].cutoff : []
+                                controllersIds: zynqtgui.curlayerEngineId != null && root.synthMap[zynqtgui.curlayerEngineId] != null && root.synthMap[zynqtgui.curlayerEngineId].cutoff ? root.synthMap[zynqtgui.curlayerEngineId].cutoff : []
 
                                 Here.Dial {
                                     id: _cutoffDial
@@ -296,7 +296,7 @@ Item {
                                     Layout.fillHeight: true
                                     Layout.fillWidth: true
                                     highlighted : _resDial.pressed
-                                    controllersIds: zynqtgui.curlayerEngineName != null && root.synthMap[zynqtgui.curlayerEngineName] != null && root.synthMap[zynqtgui.curlayerEngineName].resonance ? root.synthMap[zynqtgui.curlayerEngineName].resonance : []
+                                    controllersIds: zynqtgui.curlayerEngineId != null && root.synthMap[zynqtgui.curlayerEngineId] != null && root.synthMap[zynqtgui.curlayerEngineId].resonance ? root.synthMap[zynqtgui.curlayerEngineId].resonance : []
                                     debugMode: root.debugMode
 
                                     Here.Dial {
@@ -320,7 +320,7 @@ Item {
                                     Layout.fillHeight: true
                                     Layout.fillWidth: true
                                     highlighted : _typeDial.pressed
-                                    controllersIds: zynqtgui.curlayerEngineName != null && root.synthMap[zynqtgui.curlayerEngineName] != null && root.synthMap[zynqtgui.curlayerEngineName].filterType ? root.synthMap[zynqtgui.curlayerEngineName].filterType : []
+                                    controllersIds: zynqtgui.curlayerEngineId != null && root.synthMap[zynqtgui.curlayerEngineId] != null && root.synthMap[zynqtgui.curlayerEngineId].filterType ? root.synthMap[zynqtgui.curlayerEngineId].filterType : []
                                     debugMode: root.debugMode
 
                                     Here.Dial {
@@ -357,7 +357,7 @@ Item {
                                 Layout.fillWidth: true
                                 Layout.fillHeight: true
                                 highlighted : _sliderAAtack.pressed
-                                controllersIds: zynqtgui.curlayerEngineName != null && root.synthMap[zynqtgui.curlayerEngineName] != null && root.synthMap[zynqtgui.curlayerEngineName].ampAttack ? root.synthMap[zynqtgui.curlayerEngineName].ampAttack : []
+                                controllersIds: zynqtgui.curlayerEngineId != null && root.synthMap[zynqtgui.curlayerEngineId] != null && root.synthMap[zynqtgui.curlayerEngineId].ampAttack ? root.synthMap[zynqtgui.curlayerEngineId].ampAttack : []
 
                                 Here.Slider {
                                     id: _sliderAAtack
@@ -381,7 +381,7 @@ Item {
                                 Layout.fillWidth: true
                                 Layout.fillHeight: true
                                 highlighted : _sliderARel.pressed
-                                controllersIds: zynqtgui.curlayerEngineName != null && root.synthMap[zynqtgui.curlayerEngineName] != null && root.synthMap[zynqtgui.curlayerEngineName].ampRelease ? root.synthMap[zynqtgui.curlayerEngineName].ampRelease : []
+                                controllersIds: zynqtgui.curlayerEngineId != null && root.synthMap[zynqtgui.curlayerEngineId] != null && root.synthMap[zynqtgui.curlayerEngineId].ampRelease ? root.synthMap[zynqtgui.curlayerEngineId].ampRelease : []
 
 
                                 Here.Slider {
