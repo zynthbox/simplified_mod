@@ -199,7 +199,7 @@ Item {
                                 Layout.fillWidth: true
                                 Layout.fillHeight: true
                                 highlighted : _slider.pressed
-                                controllersIds: root.synthMap[zynqtgui.curlayerEngineName].filterAttack ? root.synthMap[zynqtgui.curlayerEngineName].filterAttack : []
+                                controllersIds: zynqtgui.curlayerEngineName != null && root.synthMap[zynqtgui.curlayerEngineName] != null && root.synthMap[zynqtgui.curlayerEngineName].filterAttack ? root.synthMap[zynqtgui.curlayerEngineName].filterAttack : []
 
                                 Here.Slider {
                                     id: _slider
@@ -222,7 +222,7 @@ Item {
                                 Layout.fillWidth: true
                                 Layout.fillHeight: true
                                 highlighted : _sliderFRel.pressed
-                                controllersIds: root.synthMap[zynqtgui.curlayerEngineName].filterRelease ? root.synthMap[zynqtgui.curlayerEngineName].filterRelease : []
+                                controllersIds: zynqtgui.curlayerEngineName != null && root.synthMap[zynqtgui.curlayerEngineName] != null && root.synthMap[zynqtgui.curlayerEngineName].filterRelease ? root.synthMap[zynqtgui.curlayerEngineName].filterRelease : []
                                 debugMode: root.debugMode
 
                                 Here.Slider {
@@ -258,7 +258,7 @@ Item {
                                 Layout.alignment: Qt.AlignCenter
                                 Layout.fillHeight: true
                                 Layout.fillWidth: true
-                                controllersIds: root.synthMap[zynqtgui.curlayerEngineName].cutoff ? root.synthMap[zynqtgui.curlayerEngineName].cutoff : []
+                                controllersIds: zynqtgui.curlayerEngineName != null && root.synthMap[zynqtgui.curlayerEngineName] != null && root.synthMap[zynqtgui.curlayerEngineName].cutoff ? root.synthMap[zynqtgui.curlayerEngineName].cutoff : []
 
                                 Here.Dial {
                                     id: _cutoffDial
@@ -296,7 +296,7 @@ Item {
                                     Layout.fillHeight: true
                                     Layout.fillWidth: true
                                     highlighted : _resDial.pressed
-                                    controllersIds: root.synthMap[zynqtgui.curlayerEngineName].resonance ? root.synthMap[zynqtgui.curlayerEngineName].resonance : []
+                                    controllersIds: zynqtgui.curlayerEngineName != null && root.synthMap[zynqtgui.curlayerEngineName] != null && root.synthMap[zynqtgui.curlayerEngineName].resonance ? root.synthMap[zynqtgui.curlayerEngineName].resonance : []
                                     debugMode: root.debugMode
 
                                     Here.Dial {
@@ -320,7 +320,7 @@ Item {
                                     Layout.fillHeight: true
                                     Layout.fillWidth: true
                                     highlighted : _typeDial.pressed
-                                    controllersIds: root.synthMap[zynqtgui.curlayerEngineName].filterType ? root.synthMap[zynqtgui.curlayerEngineName].filterType : []
+                                    controllersIds: zynqtgui.curlayerEngineName != null && root.synthMap[zynqtgui.curlayerEngineName] != null && root.synthMap[zynqtgui.curlayerEngineName].filterType ? root.synthMap[zynqtgui.curlayerEngineName].filterType : []
                                     debugMode: root.debugMode
 
                                     Here.Dial {
@@ -357,7 +357,7 @@ Item {
                                 Layout.fillWidth: true
                                 Layout.fillHeight: true
                                 highlighted : _sliderAAtack.pressed
-                                controllersIds: root.synthMap[zynqtgui.curlayerEngineName].ampAttack ? root.synthMap[zynqtgui.curlayerEngineName].ampAttack : []
+                                controllersIds: zynqtgui.curlayerEngineName != null && root.synthMap[zynqtgui.curlayerEngineName] != null && root.synthMap[zynqtgui.curlayerEngineName].ampAttack ? root.synthMap[zynqtgui.curlayerEngineName].ampAttack : []
 
                                 Here.Slider {
                                     id: _sliderAAtack
@@ -381,7 +381,7 @@ Item {
                                 Layout.fillWidth: true
                                 Layout.fillHeight: true
                                 highlighted : _sliderARel.pressed
-                                controllersIds: root.synthMap[zynqtgui.curlayerEngineName].ampRelease  ? root.synthMap[zynqtgui.curlayerEngineName].ampRelease : []
+                                controllersIds: zynqtgui.curlayerEngineName != null && root.synthMap[zynqtgui.curlayerEngineName] != null && root.synthMap[zynqtgui.curlayerEngineName].ampRelease ? root.synthMap[zynqtgui.curlayerEngineName].ampRelease : []
 
 
                                 Here.Slider {

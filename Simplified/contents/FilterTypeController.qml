@@ -72,24 +72,27 @@ QQC2.Control {
                 symbol: controlRoot.symbol
             }
 
-            readonly property var value : controller.ctrl.value
+            readonly property var value : controller != null && controller.ctrl != null ? controller.ctrl.value : 0
             readonly property QtObject ctrl : controller.ctrl
             readonly property int mindex : index
 
             onCtrlChanged: {
+                if (controller != null && controller.ctrl != null) {
+                    if(watcher.count<=0)
+                        return
 
-                if(watcher.count<=0)
-                    return
+                    var item =  watcher.itemAt(controlRoot.mindex)
+                    if (item != null && item.ctrl != null) {
+                        var fromValue = item.ctrl.value0
+                        var toValue = item.ctrl.max_value
 
-                var item =  watcher.itemAt(controlRoot.mindex)
-                var fromValue = item.ctrl.value0
-                var toValue = item.ctrl.max_value
+                        root.from = fromValue
+                        root.to = toValue
+                        root.stepSize = item.ctrl ? (item.ctrl.step_size === 0 ? 1 : item.ctrl.step_size) : 0
 
-                root.from = fromValue
-                root.to = toValue
-                root.stepSize = item.ctrl ? (item.ctrl.step_size === 0 ? 1 : item.ctrl.step_size) : 0
-
-                calculate(mindex)
+                        calculate(mindex)
+                    }
+                }
             }
 
             onValueChanged: {
@@ -193,7 +196,7 @@ QQC2.Control {
                             property Item obj : watcher.itemAt(modelData)
                             width: parent.width
                             color: root.foregroundColor
-                            text:  obj.ctrl.title + " : " + obj.ctrl.value.toFixed(2) + " | " +obj.ctrl.value_print
+                            text:  obj != null && obj.ctrl != null ? "%1 : %2 | %3".arg(obj.ctrl.title).arg(obj.ctrl.value.toFixed(2)).arg(obj.ctrl.value_print) : ""
                             font.pointSize: 6
                             fontSizeMode: Text.Fit
                             minimumPointSize: 4
