@@ -265,16 +265,11 @@ QQC2.Control {
         for (i; i < watcher.count; i++) {
             var item = watcher.itemAt(i)
             sumValue += item.ctrl.value
-            console.log("Calculating medium controllers value", sumValue, item.objectName )
         }
 
         var mediumValue = sumValue / i
         root.value = mediumValue
         root.valueChanged()
-
-        console.log("Calculating medium controllers value", sumValue, root.from, root.to )
-        console.log("Calculating medium controllers value", mediumValue)
-
     }
 
     function setValue(value) {
