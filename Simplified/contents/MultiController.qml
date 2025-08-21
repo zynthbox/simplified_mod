@@ -64,16 +64,16 @@ QQC2.Control {
             objectName: "Controller#"+symbol
             property string symbol : modelData
 
-            Here.ControllerGroup {
+            Zynthian.ControllerGroup {
                 id: controller
                 symbol: controlRoot.symbol
             }
 
-            readonly property var value : controller != null && controller.ctrl != null ? controller.ctrl.value : 0
+            readonly property var value : controller.ctrl != null ? controller.ctrl.value : 0
             readonly property QtObject ctrl : controller.ctrl
 
             onCtrlChanged: {
-                if (controller != null && controller.ctrl != null) {
+                if (controller.ctrl != null) {
                     var fromValue = 0.0
                     var toValue = 0.0
 

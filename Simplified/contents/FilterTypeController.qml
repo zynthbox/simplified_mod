@@ -67,7 +67,7 @@ QQC2.Control {
             objectName: "Controller#"+symbol
             property string symbol : modelData
 
-            Here.ControllerGroup {
+            Zynthian.ControllerGroup {
                 id: controller
                 symbol: controlRoot.symbol
             }
