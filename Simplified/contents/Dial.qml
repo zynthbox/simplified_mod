@@ -39,10 +39,10 @@ QQC2.Dial {
     implicitWidth: 300
     implicitHeight: 300
 
-    property color highlightColor : "#5765f2"
-    property color backgroundColor: "#333"
-    property color foregroundColor: "#fafafa"
-    property color alternativeColor :  "#16171C"
+    property color highlightColor : Kirigami.Theme.highlightColor /*"#5765f2"*/
+    property color backgroundColor: Kirigami.Theme.backgroundColor /*"#333"*/
+    property color foregroundColor: Kirigami.Theme.textColor/*"#fafafa"*/
+    property color alternativeColor : Kirigami.Theme.alternateBackgroundColor /* "#16171C"*/
 
     property alias text : _label1.text
 
@@ -121,7 +121,7 @@ QQC2.Dial {
                     height: _container.height * 0.12
                     radius: width / 2
                     color: highlighted ? dial.highlightColor : dial.alternativeColor
-                    opacity: highlighted ? 1 : 0.7
+                    opacity: highlighted ? 1 : 0.9
                     property bool highlighted : indicator.angle < (dial.angle)
                     readonly property real angle: index * (360/Math.round(_container.width/4)) + (-140)
                     transform: [

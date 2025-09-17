@@ -36,27 +36,96 @@ QQC2.Slider {
     implicitWidth: horizontal ? 300 : 28
     implicitHeight: horizontal ? 28 : 300
 
-    property color highlightColor : "#5765f2"
-    property color backgroundColor: "#333"
-    property color foregroundColor: "#fafafa"
-    property color alternativeColor :  "#16171C"
+    property color highlightColor : Kirigami.Theme.highlightColor /*"#5765f2"*/
+    property color backgroundColor: Kirigami.Theme.backgroundColor /*"#333"*/
+    property color foregroundColor: Kirigami.Theme.textColor/*"#fafafa"*/
+    property color alternativeColor : Kirigami.Theme.alternateBackgroundColor /* "#16171C"*/
 
     orientation: Qt.Vertical
 
     padding: 4
     clip: false
 
-    handle: Item {
+    QQC2.Slider {
+        id: _dummySlider
+        height: parent.height
+        width: parent.width
+        x: (slider.width+16)
+        value: slider.value
+        onValueChanged: {
+            slider.value = value
+            slider.moved()
+        }
+
+        from: slider.from
+        to: slider.to
+        stepSize: slider.stepSize
+        orientation: _slider.orientation
         visible: slider.enabled
+
+        background: Rectangle {
+            color: "transparent"
+        }
+
+        handle: Item {
+            x: _dummySlider.orientation === Qt.Horizontal ? _dummySlider.leftPadding + _dummySlider.visualPosition * (_dummySlider.availableWidth - width) :
+                                                            _dummySlider.leftPadding + _dummySlider.availableWidth / 2 - width / 2
+
+            y: _dummySlider.orientation === Qt.Horizontal ?  _dummySlider.topPadding + _dummySlider.availableHeight / 2 - height / 2 :
+                                                            _dummySlider.visualPosition * (_dummySlider.availableHeight - height)
+
+            implicitWidth: _dummySlider.orientation === Qt.Horizontal ? 36 : 180
+            implicitHeight: _dummySlider.orientation === Qt.Horizontal  ? _bgBox.height:  36
+
+            Rectangle {
+
+                width: _bgBox.width+16
+                height: 36
+                anchors.centerIn: parent
+                radius: 6
+                color: slider.backgroundColor
+                border.color: Qt.darker(slider.alternativeColor, 2)
+
+                layer.enabled: !_dummySlider.pressed
+                layer.effect: DropShadow {
+                    horizontalOffset: 0
+                    verticalOffset: 0
+                    radius: 8.0
+                    samples: 17
+                    color: "#80000000"
+                }
+
+                Rectangle {
+                    color: "transparent"
+                    border.color: Qt.lighter(slider.alternativeColor, 2)
+                    border.width :2
+                    radius: parent.radius
+                    anchors.fill: parent
+                    anchors.margins: 1
+                }
+
+                Rectangle {
+                    height: 6
+                    width: _verticalRec.width
+                    radius: 5
+                    anchors.centerIn: parent
+
+                    color: slider.highlightColor
+                }
+            }
+        }
+    }
+
+    handle: Item {
+        visible: false
         x: slider.orientation === Qt.Horizontal ? slider.leftPadding + slider.visualPosition * (slider.availableWidth - width) :
                                                   slider.leftPadding + slider.availableWidth / 2 - width / 2
 
         y: slider.orientation === Qt.Horizontal ?  slider.topPadding + slider.availableHeight / 2 - height / 2 :
-                                                 slider.visualPosition * (slider.availableHeight - height)
+                                                  slider.visualPosition * (slider.availableHeight - height)
 
         implicitWidth: slider.orientation === Qt.Horizontal ? 36 : 180
         implicitHeight: slider.orientation === Qt.Horizontal  ? _bgBox.height:  36
-
 
         Rectangle {
             width: _bgBox.width+16
@@ -94,10 +163,7 @@ QQC2.Slider {
             }
         }
 
-
-
-        QQC2. Label {
-
+        QQC2.Label {
             height: 36
             width: 60
             anchors.verticalCenter: parent.verticalCenter
@@ -135,7 +201,6 @@ QQC2.Slider {
         color: "transparent"
         radius: 6
 
-
         Rectangle {
             id: _bgBox
             visible: false
@@ -147,11 +212,23 @@ QQC2.Slider {
         }
 
         InnerShadow {
+              opacity: 0.5
             anchors.fill: _bgBox
             radius: 8.0
             samples: 16
             horizontalOffset: 1
             verticalOffset: 3
+            color: "#b0000000"
+            source: _bgBox
+        }
+
+        InnerShadow {
+            anchors.fill: _bgBox
+            opacity: 0.5
+            radius: 8.0
+            samples: 16
+            horizontalOffset: -1
+            verticalOffset: -3
             color: "#b0000000"
             source: _bgBox
         }
@@ -205,16 +282,29 @@ QQC2.Slider {
                 Repeater {
                     id: _repeater
                     model: Math.round(_verticalRec.height/12)
-                    Rectangle {
-
-                        property bool highlighted : slider.position> position
-                        property double position : 1 -((index * 1) / _repeater.count)
+                    Item {
 
                         width: parent.width
                         height: 6
-                        radius: 5
-                        opacity:  highlighted ? 1.0 : 0.7
-                        color:  highlighted ? slider.highlightColor : slider.alternativeColor
+
+                        Rectangle {
+                            id: bulb
+                            property bool highlighted : slider.position> position
+                            property double position : 1 -((index * 1.07) / _repeater.count)
+
+                            anchors.fill: parent
+                            radius: 5
+                            opacity:  highlighted ? 1.0 : 0.9
+                            color:  highlighted ? slider.highlightColor : slider.alternativeColor
+                            RadialGradient {
+                                visible: bulb.highlighted
+                                anchors.fill: parent
+                                gradient: Gradient {
+                                    GradientStop { position: 0.0; color: Qt.lighter(slider.highlightColor) }
+                                    GradientStop { position: 0.5; color: "transparent" }
+                                }
+                            }
+                        }
                     }
                 }
             }

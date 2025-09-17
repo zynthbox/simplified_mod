@@ -43,10 +43,10 @@ QQC2.Control {
     property double from: 0.0
     property double to : 0.0
 
-    property color highlightColor : "#5765f2"
-    property color backgroundColor: "#333"
-    property color foregroundColor: "#fafafa"
-    property color alternativeColor :  "#16171C"
+    property color highlightColor : Kirigami.Theme.highlightColor /*"#5765f2"*/
+    property color backgroundColor: Kirigami.Theme.backgroundColor /*"#333"*/
+    property color foregroundColor: Kirigami.Theme.textColor/*"#fafafa"*/
+    property color alternativeColor : Kirigami.Theme.alternateBackgroundColor /* "#16171C"*/
 
     property bool highlighted : false
 
@@ -102,7 +102,12 @@ QQC2.Control {
         }
     }
 
+
     contentItem: Item {
+        // Text {
+        //     color:"orange"
+        //     text: controllersIds.join(",")
+        // }
         ColumnLayout {
             anchors.fill: parent
 
@@ -123,7 +128,6 @@ QQC2.Control {
                 ColumnLayout {
                     id: _container
                     anchors.fill: parent
-
                 }
             }
 
@@ -142,7 +146,7 @@ QQC2.Control {
 
                 font.letterSpacing: 2
                 color: root.foregroundColor
-                padding: 4                
+                padding: 4
 
                 MouseArea {
                     anchors.fill: parent
@@ -169,7 +173,19 @@ QQC2.Control {
                     }
 
                     InnerShadow {
+                        opacity: 0.5
                         anchors.fill: _recLabel
+                        radius: 8.0
+                        samples: 16
+                        horizontalOffset: 3
+                        verticalOffset: -1
+                        color: "#b0000000"
+                        source: _recLabel
+                    }
+
+                    InnerShadow {
+                        anchors.fill: _recLabel
+                        opacity: 0.5
                         radius: 8.0
                         samples: 16
                         horizontalOffset: -3
@@ -180,56 +196,63 @@ QQC2.Control {
                 }
             }
 
-            QQC2.Control {
+            Loader {
+                id: _loader
+                active: visible
                 visible: enabled && root.debugMode
+                // asynchronous: true
 
                 Layout.fillWidth: true
-                padding: 4
-                contentItem: Column {
-                    Repeater {
-                        model: watcher.count
+                sourceComponent : QQC2.Control {
 
-                        delegate: Text {
+                    padding: 4
+                    contentItem: Column {
+                        Repeater {
+                            model: watcher.count
 
-                            property Item obj : watcher.itemAt(modelData)
-                            width: parent.width
-                            color: root.foregroundColor
-                            text:  obj != null && obj.ctrl != null ? "%1 : %2 | %3".arg(obj.ctrl.title).arg(obj.ctrl.value.toFixed(2)).arg((obj.ctrl.value/obj.ctrl.max_value).toFixed(2)) : ""
-                            font.pointSize: 6
-                            fontSizeMode: Text.Fit
-                            minimumPointSize: 4
-                            wrapMode: Text.NoWrap
+                            delegate: Text {
+
+                                property Item obj : watcher.itemAt(modelData)
+                                width: parent.width
+                                color: root.foregroundColor
+                                // text: obj.ctrl.title
+                                text:  obj != null && obj.ctrl != null ? "%1 : %2 | %3".arg(obj.ctrl.title).arg(obj.ctrl.value.toFixed(2)).arg((obj.ctrl.value/obj.ctrl.max_value).toFixed(2)) : "Error"
+                                font.pointSize: 6
+                                fontSizeMode: Text.Fit
+                                minimumPointSize: 4
+                                wrapMode: Text.NoWrap
+                            }
                         }
                     }
-                }
 
-                background: Rectangle {
+                    background: Rectangle {
 
-                    border.width: 2
-                    border.color: root.alternativeColor
-                    color: root.backgroundColor
-                    radius: 4
-
-                    Rectangle {
-                        anchors.fill: parent
-                        anchors.margins: 1
-
-                        visible: false
-                        id: _infoRec
-                        color: root.alternativeColor
-                        border.color: Qt.darker(color, 2)
+                        border.width: 2
+                        border.color: root.alternativeColor
+                        color: root.backgroundColor
                         radius: 4
 
-                    }
+                        Rectangle {
+                            anchors.fill: parent
+                            anchors.margins: 1
 
-                    InnerShadow {
-                        anchors.fill: _infoRec
-                        radius: 8.0
-                        samples: 16
-                        horizontalOffset: -3
-                        verticalOffset: 1
-                        color: "#b0000000"
-                        source: _infoRec
+                            visible: false
+                            id: _infoRec
+                            color: root.alternativeColor
+                            border.color: Qt.darker(color, 2)
+                            radius: 4
+
+                        }
+
+                        InnerShadow {
+                            anchors.fill: _infoRec
+                            radius: 8.0
+                            samples: 16
+                            horizontalOffset: -3
+                            verticalOffset: 1
+                            color: "#b0000000"
+                            source: _infoRec
+                        }
                     }
                 }
             }
@@ -241,20 +264,6 @@ QQC2.Control {
         if(visible)
             calculate()
     }
-
-    // Component.onCompleted: {
-    //     var i = 0
-    //     var fromValue = 0.0
-    //     var toValue = 0.0
-
-    //     for (i; i < controllers.length; i++) {
-    //         fromValue += controllers[i].ctrl.max_value
-    //         toValue += controllers[i].ctrl.max_value
-    //     }
-
-    //     root.from = fromValue/i
-    //     root.to = toValue/i
-    // }
 
     function calculate() {
         if(!root.visible)
@@ -283,5 +292,10 @@ QQC2.Control {
         }
 
         calculate()
+    }
+
+    function update() {
+        _loader.active = false
+        _loader.active = true
     }
 }

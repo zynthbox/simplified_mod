@@ -37,6 +37,24 @@ Item {
     id: root
     property bool debugMode: false
 
+    readonly property string currentEngineId: zynqtgui.curlayerEngineId
+    readonly property var selectedChannel : applicationWindow().selectedChannel
+    // readonly property string currentSlotPos: root.selectedChannel.id + "/" +root.selectedChannel.selectedSlot.value + "/" +currentEngineId
+    // readonly property var curLayer: zynqtgui.curLayer
+
+    Connections{
+        target: zynqtgui.control
+        onAll_controlsChanged :
+        {
+            update()
+        }
+    }
+
+    function update() {
+        _loader.active = false
+        _loader.active = true
+    }
+
     readonly property var synthMap : {
         'ZBP_SYNTH_00008': {
             'cutoff': ["DCF1_CUTOFF","DCF2_CUTOFF"],
@@ -124,7 +142,7 @@ Item {
     }
 
     QQC2.Control {
-        enabled: zynqtgui.curlayerEngineId != null
+        enabled: root.currentEngineId != null
         anchors.fill: parent
         padding: 10
 
@@ -143,13 +161,13 @@ Item {
             }
         }
 
-        contentItem: Item {
-            ColumnLayout {
-                anchors.fill: parent
+        contentItem: Loader {
+            id: _loader
+            // asynchronous: true
+            sourceComponent: ColumnLayout {
                 RowLayout {
                     Layout.fillWidth: true
                     QQC2.Label {
-
                         text: "Simplified"
                         font.capitalization: Font.AllUppercase
                         font.weight: Font.ExtraBold
@@ -194,12 +212,11 @@ Item {
                             Here.MultiController {
                                 id: _multiFilterAttackController
                                 debugMode: root.debugMode
-                                highlightColor: "#de20ff"
                                 title: "Filter Attack"
                                 Layout.fillWidth: true
                                 Layout.fillHeight: true
                                 highlighted : _slider.pressed
-                                controllersIds: zynqtgui.curlayerEngineId != null && root.synthMap[zynqtgui.curlayerEngineId] != null && root.synthMap[zynqtgui.curlayerEngineId].filterAttack ? root.synthMap[zynqtgui.curlayerEngineId].filterAttack : []
+                                controllersIds: root.currentEngineId != null && root.synthMap[root.currentEngineId] != null && root.synthMap[root.currentEngineId].filterAttack ? root.synthMap[root.currentEngineId].filterAttack : []
 
                                 Here.Slider {
                                     id: _slider
@@ -207,7 +224,6 @@ Item {
                                     Layout.fillHeight: true
                                     Layout.alignment: Qt.AlignCenter
                                     orientation: Qt.Vertical
-                                    highlightColor: _multiFilterAttackController.highlightColor
                                     from:_multiFilterAttackController.from
                                     to:_multiFilterAttackController.to
                                     value: _multiFilterAttackController.value
@@ -217,12 +233,11 @@ Item {
 
                             Here.MultiController {
                                 id: _multiFilterReleaseController
-                                highlightColor: "#de20ff"
                                 title: "Filter Release"
                                 Layout.fillWidth: true
                                 Layout.fillHeight: true
                                 highlighted : _sliderFRel.pressed
-                                controllersIds: zynqtgui.curlayerEngineId != null && root.synthMap[zynqtgui.curlayerEngineId] != null && root.synthMap[zynqtgui.curlayerEngineId].filterRelease ? root.synthMap[zynqtgui.curlayerEngineId].filterRelease : []
+                                controllersIds: root.currentEngineId != null && root.synthMap[root.currentEngineId] != null && root.synthMap[root.currentEngineId].filterRelease ? root.synthMap[root.currentEngineId].filterRelease : []
                                 debugMode: root.debugMode
 
                                 Here.Slider {
@@ -231,11 +246,10 @@ Item {
                                     Layout.fillHeight: true
                                     Layout.alignment: Qt.AlignCenter
                                     orientation: Qt.Vertical
-                                    highlightColor: _multiFilterReleaseController.highlightColor
-                                    from:_multiFilterReleaseController.from
-                                    to:_multiFilterReleaseController.to
+                                    from: _multiFilterReleaseController.from
+                                    to: _multiFilterReleaseController.to
                                     value: _multiFilterReleaseController.value
-                                    onMoved:_multiFilterReleaseController.setValue(value)
+                                    onMoved: _multiFilterReleaseController.setValue(value)
                                 }
                             }
                         }
@@ -258,7 +272,7 @@ Item {
                                 Layout.alignment: Qt.AlignCenter
                                 Layout.fillHeight: true
                                 Layout.fillWidth: true
-                                controllersIds: zynqtgui.curlayerEngineId != null && root.synthMap[zynqtgui.curlayerEngineId] != null && root.synthMap[zynqtgui.curlayerEngineId].cutoff ? root.synthMap[zynqtgui.curlayerEngineId].cutoff : []
+                                controllersIds: root.currentEngineId != null && root.synthMap[root.currentEngineId] != null && root.synthMap[root.currentEngineId].cutoff ? root.synthMap[root.currentEngineId].cutoff : []
 
                                 Here.Dial {
                                     id: _cutoffDial
@@ -267,7 +281,6 @@ Item {
                                     Layout.fillHeight: true
                                     Layout.alignment: Qt.AlignCenter
                                     // orientation: Qt.Vertical
-                                    highlightColor: _multiCutoffController.highlightColor
                                     from: _multiCutoffController.from
                                     to: _multiCutoffController.to
                                     value: _multiCutoffController.value > 0 ?_multiCutoffController.value  : 0
@@ -296,7 +309,7 @@ Item {
                                     Layout.fillHeight: true
                                     Layout.fillWidth: true
                                     highlighted : _resDial.pressed
-                                    controllersIds: zynqtgui.curlayerEngineId != null && root.synthMap[zynqtgui.curlayerEngineId] != null && root.synthMap[zynqtgui.curlayerEngineId].resonance ? root.synthMap[zynqtgui.curlayerEngineId].resonance : []
+                                    controllersIds: root.currentEngineId != null && root.synthMap[root.currentEngineId] != null && root.synthMap[root.currentEngineId].resonance ? root.synthMap[root.currentEngineId].resonance : []
                                     debugMode: root.debugMode
 
                                     Here.Dial {
@@ -305,7 +318,6 @@ Item {
                                         implicitWidth: height
                                         Layout.alignment: Qt.AlignCenter
                                         // orientation: Qt.Vertical
-                                        highlightColor: _multiResController.highlightColor
                                         from:_multiResController.from
                                         to:_multiResController.to
                                         value: _multiResController.value
@@ -320,7 +332,7 @@ Item {
                                     Layout.fillHeight: true
                                     Layout.fillWidth: true
                                     highlighted : _typeDial.pressed
-                                    controllersIds: zynqtgui.curlayerEngineId != null && root.synthMap[zynqtgui.curlayerEngineId] != null && root.synthMap[zynqtgui.curlayerEngineId].filterType ? root.synthMap[zynqtgui.curlayerEngineId].filterType : []
+                                    controllersIds: root.currentEngineId != null && root.synthMap[root.currentEngineId] != null && root.synthMap[root.currentEngineId].filterType ? root.synthMap[root.currentEngineId].filterType : []
                                     debugMode: root.debugMode
 
                                     Here.Dial {
@@ -329,7 +341,6 @@ Item {
                                         implicitWidth: height
                                         Layout.alignment: Qt.AlignCenter
                                         // orientation: Qt.Vertical
-                                        highlightColor: _multiTypeController.highlightColor
                                         from:_multiTypeController.from
                                         to:_multiTypeController.to
                                         value: _multiTypeController.value
@@ -352,12 +363,11 @@ Item {
                             Here.MultiController {
                                 debugMode: root.debugMode
                                 id: _multiAmpAttackController
-                                highlightColor: "#de20ff"
                                 title: "Amp Attack"
                                 Layout.fillWidth: true
                                 Layout.fillHeight: true
                                 highlighted : _sliderAAtack.pressed
-                                controllersIds: zynqtgui.curlayerEngineId != null && root.synthMap[zynqtgui.curlayerEngineId] != null && root.synthMap[zynqtgui.curlayerEngineId].ampAttack ? root.synthMap[zynqtgui.curlayerEngineId].ampAttack : []
+                                controllersIds: root.currentEngineId != null && root.synthMap[root.currentEngineId] != null && root.synthMap[root.currentEngineId].ampAttack ? root.synthMap[root.currentEngineId].ampAttack : []
 
                                 Here.Slider {
                                     id: _sliderAAtack
@@ -365,7 +375,6 @@ Item {
                                     Layout.fillHeight: true
                                     Layout.alignment: Qt.AlignCenter
                                     orientation: Qt.Vertical
-                                    highlightColor: _multiAmpAttackController.highlightColor
                                     from:_multiAmpAttackController.from
                                     to:_multiAmpAttackController.to
                                     value: _multiAmpAttackController.value
@@ -376,13 +385,11 @@ Item {
                             Here.MultiController {
                                 id: _multiAmpReleaseController
                                 debugMode: root.debugMode
-                                highlightColor: "#de20ff"
                                 title: "Amp Release"
                                 Layout.fillWidth: true
                                 Layout.fillHeight: true
                                 highlighted : _sliderARel.pressed
-                                controllersIds: zynqtgui.curlayerEngineId != null && root.synthMap[zynqtgui.curlayerEngineId] != null && root.synthMap[zynqtgui.curlayerEngineId].ampRelease ? root.synthMap[zynqtgui.curlayerEngineId].ampRelease : []
-
+                                controllersIds: root.currentEngineId != null && root.synthMap[root.currentEngineId] != null && root.synthMap[root.currentEngineId].ampRelease ? root.synthMap[root.currentEngineId].ampRelease : []
 
                                 Here.Slider {
                                     id: _sliderARel
@@ -390,16 +397,13 @@ Item {
                                     Layout.fillHeight: true
                                     Layout.alignment: Qt.AlignCenter
                                     orientation: Qt.Vertical
-                                    highlightColor: _multiAmpReleaseController.highlightColor
-                                    from:_multiAmpReleaseController.from
-                                    to:_multiAmpReleaseController.to
+                                    from: _multiAmpReleaseController.from
+                                    to: _multiAmpReleaseController.to
                                     value: _multiAmpReleaseController.value
                                     onMoved:_multiAmpReleaseController.setValue(value)
                                 }
                             }
                         }
-
-
                     }
                 }
             }

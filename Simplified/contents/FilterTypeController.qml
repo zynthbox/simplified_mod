@@ -45,10 +45,10 @@ QQC2.Control {
     property int stepSize : 1
     property string printValue
 
-    property color highlightColor : "#5765f2"
-    property color backgroundColor: "#333"
-    property color foregroundColor: "#fafafa"
-    property color alternativeColor :  "#16171C"
+    property color highlightColor : Kirigami.Theme.highlightColor /*"#5765f2"*/
+    property color backgroundColor: Kirigami.Theme.backgroundColor /*"#333"*/
+    property color foregroundColor: Kirigami.Theme.textColor/*"#fafafa"*/
+    property color alternativeColor : Kirigami.Theme.alternateBackgroundColor /* "#16171C"*/
 
     property bool highlighted : false
 
@@ -172,6 +172,7 @@ QQC2.Control {
 
                     InnerShadow {
                         anchors.fill: _recLabel
+                        opacity: 0.5
                         radius: 8.0
                         samples: 16
                         horizontalOffset: -3
@@ -179,59 +180,75 @@ QQC2.Control {
                         color: "#b0000000"
                         source: _recLabel
                     }
+
+                    InnerShadow {
+                        anchors.fill: _recLabel
+                        opacity: 0.5
+                        radius: 8.0
+                        samples: 16
+                        horizontalOffset: 3
+                        verticalOffset: -1
+                        color: "#b0000000"
+                        source: _recLabel
+                    }
                 }
             }
 
-            QQC2.Control {
+            Loader {
+                active: visible
                 visible: enabled && root.debugMode
+                asynchronous: true
 
                 Layout.fillWidth: true
-                padding: 4
-                contentItem: Column {
-                    Repeater {
-                        model: watcher.count
+                sourceComponent: QQC2.Control {
 
-                        delegate: Text {
+                    padding: 4
+                    contentItem: Column {
+                        Repeater {
+                            model: watcher.count
 
-                            property Item obj : watcher.itemAt(modelData)
-                            width: parent.width
-                            color: root.foregroundColor
-                            text:  obj != null && obj.ctrl != null ? "%1 : %2 | %3".arg(obj.ctrl.title).arg(obj.ctrl.value.toFixed(2)).arg(obj.ctrl.value_print) : ""
-                            font.pointSize: 6
-                            fontSizeMode: Text.Fit
-                            minimumPointSize: 4
-                            wrapMode: Text.NoWrap
+                            delegate: Text {
+
+                                property Item obj : watcher.itemAt(modelData)
+                                width: parent.width
+                                color: root.foregroundColor
+                                text:  obj != null && obj.ctrl != null ? "%1 : %2 | %3".arg(obj.ctrl.title).arg(obj.ctrl.value.toFixed(2)).arg(obj.ctrl.value_print) : ""
+                                font.pointSize: 6
+                                fontSizeMode: Text.Fit
+                                minimumPointSize: 4
+                                wrapMode: Text.NoWrap
+                            }
                         }
                     }
-                }
 
-                background: Rectangle {
+                    background: Rectangle {
 
-                    border.width: 2
-                    border.color: root.alternativeColor
-                    color: root.backgroundColor
-                    radius: 4
-
-                    Rectangle {
-                        anchors.fill: parent
-                        anchors.margins: 1
-
-                        visible: false
-                        id: _infoRec
-                        color: root.alternativeColor
-                        border.color: Qt.darker(color, 2)
+                        border.width: 2
+                        border.color: root.alternativeColor
+                        color: root.backgroundColor
                         radius: 4
 
-                    }
+                        Rectangle {
+                            anchors.fill: parent
+                            anchors.margins: 1
 
-                    InnerShadow {
-                        anchors.fill: _infoRec
-                        radius: 8.0
-                        samples: 16
-                        horizontalOffset: -3
-                        verticalOffset: 1
-                        color: "#b0000000"
-                        source: _infoRec
+                            visible: false
+                            id: _infoRec
+                            color: root.alternativeColor
+                            border.color: Qt.darker(color, 2)
+                            radius: 4
+
+                        }
+
+                        InnerShadow {
+                            anchors.fill: _infoRec
+                            radius: 8.0
+                            samples: 16
+                            horizontalOffset: -3
+                            verticalOffset: 1
+                            color: "#b0000000"
+                            source: _infoRec
+                        }
                     }
                 }
             }
