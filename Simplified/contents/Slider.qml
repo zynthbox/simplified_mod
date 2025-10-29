@@ -36,10 +36,15 @@ QQC2.Slider {
     implicitWidth: horizontal ? 300 : 28
     implicitHeight: horizontal ? 28 : 300
 
-    property color highlightColor : Kirigami.Theme.highlightColor /*"#5765f2"*/
-    property color backgroundColor: Kirigami.Theme.backgroundColor /*"#333"*/
-    property color foregroundColor: Kirigami.Theme.textColor/*"#fafafa"*/
-    property color alternativeColor : Kirigami.Theme.alternateBackgroundColor /* "#16171C"*/
+    property color highlightColor : "#5765f2"
+    property color backgroundColor: "#333"
+    property color foregroundColor: "#fafafa"
+    property color alternativeColor :"#16171C"
+
+    // property color highlightColor : Kirigami.Theme.highlightColor /*"#5765f2"*/
+    // property color backgroundColor: Kirigami.Theme.backgroundColor /*"#333"*/
+    // property color foregroundColor: Kirigami.Theme.textColor/*"#fafafa"*/
+    // property color alternativeColor : Kirigami.Theme.alternateBackgroundColor /* "#16171C"*/
 
     orientation: Qt.Vertical
 

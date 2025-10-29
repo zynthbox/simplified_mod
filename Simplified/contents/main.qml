@@ -36,7 +36,6 @@ import QtGraphicalEffects 1.15
 Item {
     id: root
     property bool debugMode: false
-
     readonly property string currentEngineId: zynqtgui.curlayerEngineId
     readonly property var selectedChannel : applicationWindow().selectedChannel
     // readonly property string currentSlotPos: root.selectedChannel.id + "/" +root.selectedChannel.selectedSlot.value + "/" +currentEngineId

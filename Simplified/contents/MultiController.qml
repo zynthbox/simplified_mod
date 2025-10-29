@@ -43,10 +43,10 @@ QQC2.Control {
     property double from: 0.0
     property double to : 0.0
 
-    property color highlightColor : Kirigami.Theme.highlightColor /*"#5765f2"*/
-    property color backgroundColor: Kirigami.Theme.backgroundColor /*"#333"*/
-    property color foregroundColor: Kirigami.Theme.textColor/*"#fafafa"*/
-    property color alternativeColor : Kirigami.Theme.alternateBackgroundColor /* "#16171C"*/
+    property color highlightColor : "#5765f2"
+    property color backgroundColor: "#333"
+    property color foregroundColor: "#fafafa"
+    property color alternativeColor :"#16171C"
 
     property bool highlighted : false
 
