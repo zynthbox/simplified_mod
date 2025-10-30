@@ -273,7 +273,8 @@ QQC2.Control {
         var i = 0
         for (i; i < watcher.count; i++) {
             var item = watcher.itemAt(i)
-            sumValue += item.ctrl.value
+            if(item.ctrl)
+                sumValue += item.ctrl.value
         }
 
         var mediumValue = sumValue / i

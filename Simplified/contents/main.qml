@@ -33,13 +33,83 @@ import "." as Here
 import Zynthian 1.0 as Zynthian
 import QtGraphicalEffects 1.15
 
-Item {
+QQC2.Pane {
     id: root
+    objectName: "simpleMod"
     property bool debugMode: false
     readonly property string currentEngineId: zynqtgui.curlayerEngineId
     readonly property var selectedChannel : applicationWindow().selectedChannel
     // readonly property string currentSlotPos: root.selectedChannel.id + "/" +root.selectedChannel.selectedSlot.value + "/" +currentEngineId
     // readonly property var curLayer: zynqtgui.curLayer
+focus: true
+
+
+// onVisibleChanged: {
+//     if(visible){
+//         zynqtgui.current_qml_page = root
+//     }
+// }
+    property var cuiaCallback: function(cuia) {
+        _test.text = "cuia"
+        switch (cuia) {
+            case "SELECT_UP":
+            case "SELECT_DOWN":
+                if (root.lastSelectedObj === control1) {
+                    root.lastSelectedObj = control2
+                } else if (root.lastSelectedObj === control2) {
+                    root.lastSelectedObj = control1
+                } else if (root.lastSelectedObj === control3) {
+                    root.lastSelectedObj = control4
+                } else if (root.lastSelectedObj === control4) {
+                    root.lastSelectedObj = control3
+                } else {
+                    root.lastSelectedObj = control1
+                }
+
+                return true
+            case "NAVIGATE_LEFT":
+            case "NAVIGATE_RIGHT":
+                if (root.lastSelectedObj === control1) {
+                    root.lastSelectedObj = control3
+                } else if (root.lastSelectedObj === control2) {
+                    root.lastSelectedObj = control4
+                } else if (root.lastSelectedObj === control3) {
+                    root.lastSelectedObj = control1
+                } else if (root.lastSelectedObj === control4) {
+                    root.lastSelectedObj = control2
+                } else {
+                    root.lastSelectedObj = control1
+                }
+                return true
+            case "KNOB0_UP":
+                _test.text = "1"
+                _cutoffDial.increase()
+                return true
+            case "KNOB0_DOWN":
+                _test.text = "2"
+                 _cutoffDial.decrease()
+                return true
+            case "KNOB1_UP":
+            case "KNOB1_DOWN":
+            case "KNOB2_UP":
+            case "KNOB2_DOWN":
+                return true
+            case "KNOB3_UP":
+                _test.text = "3"
+                _cutoffDial.increase()
+                return true
+            case "KNOB3_DOWN":
+                _test.text = "4"
+                _cutoffDial.decrease()
+                return true
+            case "SWITCH_SELECT_SHORT":
+            case "SWITCH_SELECT_BOLD":
+                return true
+            default:
+                return false;
+        }
+    }
+
 
     Connections{
         target: zynqtgui.control
@@ -140,9 +210,8 @@ Item {
             'ampRelease': ['adsr_r', 'adsr2_r']}
     }
 
-    QQC2.Control {
+    contentItem: QQC2.Control {
         enabled: root.currentEngineId != null
-        anchors.fill: parent
         padding: 10
 
         background: Item {
@@ -182,6 +251,10 @@ Item {
 
                     Item {
                         Layout.fillWidth: true
+                        Text {
+                            id: _test
+                            text: zynqtgui.current_qml_page.objectName
+                        }
                     }
 
                     QQC2.Label {
