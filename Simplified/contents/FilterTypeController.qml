@@ -56,6 +56,7 @@ QQC2.Control {
     readonly property string displayText : printValue
     property bool debugMode: false
     property int pendingParamIndexUpdate: 0
+    property Item knobControl : null
 
     Repeater {
         id: watcher
@@ -104,6 +105,18 @@ QQC2.Control {
         }
     }
 
+    background: Item {
+
+        Rectangle {
+            anchors.fill: parent
+            anchors.margins: -4
+            color: "transparent"
+            border.color: "white"
+            border.width: 2
+            visible: root.activeFocus
+        }
+    }
+
     contentItem: Item {
         ColumnLayout {
             anchors.fill: parent
@@ -125,7 +138,6 @@ QQC2.Control {
                 ColumnLayout {
                     id: _container
                     anchors.fill: parent
-
                 }
             }
 
@@ -286,5 +298,13 @@ QQC2.Control {
         }
 
         calculate()
+    }
+
+    function increaseValue() {
+        setValue(root.value+stepSize)
+    }
+
+    function decreaseValue() {
+          setValue(root.value-stepSize)
     }
 }

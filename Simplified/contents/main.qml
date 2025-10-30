@@ -41,73 +41,16 @@ QQC2.Pane {
     readonly property var selectedChannel : applicationWindow().selectedChannel
     // readonly property string currentSlotPos: root.selectedChannel.id + "/" +root.selectedChannel.selectedSlot.value + "/" +currentEngineId
     // readonly property var curLayer: zynqtgui.curLayer
-focus: true
+    focus: true
 
 
-// onVisibleChanged: {
-//     if(visible){
-//         zynqtgui.current_qml_page = root
-//     }
-// }
+    // onVisibleChanged: {
+    //     if(visible){
+    //         zynqtgui.current_qml_page = root
+    //     }
+    // }
     property var cuiaCallback: function(cuia) {
-        _test.text = "cuia"
-        switch (cuia) {
-            case "SELECT_UP":
-            case "SELECT_DOWN":
-                if (root.lastSelectedObj === control1) {
-                    root.lastSelectedObj = control2
-                } else if (root.lastSelectedObj === control2) {
-                    root.lastSelectedObj = control1
-                } else if (root.lastSelectedObj === control3) {
-                    root.lastSelectedObj = control4
-                } else if (root.lastSelectedObj === control4) {
-                    root.lastSelectedObj = control3
-                } else {
-                    root.lastSelectedObj = control1
-                }
-
-                return true
-            case "NAVIGATE_LEFT":
-            case "NAVIGATE_RIGHT":
-                if (root.lastSelectedObj === control1) {
-                    root.lastSelectedObj = control3
-                } else if (root.lastSelectedObj === control2) {
-                    root.lastSelectedObj = control4
-                } else if (root.lastSelectedObj === control3) {
-                    root.lastSelectedObj = control1
-                } else if (root.lastSelectedObj === control4) {
-                    root.lastSelectedObj = control2
-                } else {
-                    root.lastSelectedObj = control1
-                }
-                return true
-            case "KNOB0_UP":
-                _test.text = "1"
-                _cutoffDial.increase()
-                return true
-            case "KNOB0_DOWN":
-                _test.text = "2"
-                 _cutoffDial.decrease()
-                return true
-            case "KNOB1_UP":
-            case "KNOB1_DOWN":
-            case "KNOB2_UP":
-            case "KNOB2_DOWN":
-                return true
-            case "KNOB3_UP":
-                _test.text = "3"
-                _cutoffDial.increase()
-                return true
-            case "KNOB3_DOWN":
-                _test.text = "4"
-                _cutoffDial.decrease()
-                return true
-            case "SWITCH_SELECT_SHORT":
-            case "SWITCH_SELECT_BOLD":
-                return true
-            default:
-                return false;
-        }
+        return _loader.item.cuiaCallback(cuia);
     }
 
 
@@ -232,250 +175,382 @@ focus: true
         contentItem: Loader {
             id: _loader
             // asynchronous: true
-            sourceComponent: ColumnLayout {
-                RowLayout {
-                    Layout.fillWidth: true
-                    QQC2.Label {
-                        text: "Simplified"
-                        font.capitalization: Font.AllUppercase
-                        font.weight: Font.ExtraBold
-                        font.family: "Hack"
-                        font.pointSize: 20
-                        Layout.alignment: Qt.AlignTop
+            sourceComponent: Item {
 
-                        MouseArea {
-                            anchors.fill: parent
-                            onClicked: root.debugMode = !root.debugMode
-                        }
-                    }
+                property int focusIndex : 0
+                readonly property var focusOrder : [
+                    _multiFilterAttackController,
+                    _multiFilterReleaseController,
+                    _multiCutoffController,
+                    _multiResController,
+                    _multiTypeController,
+                    _multiAmpAttackController,
+                    _multiAmpReleaseController]
 
-                    Item {
+                Component.onCompleted: focusOrder[focusIndex].forceActiveFocus()
+
+                ColumnLayout {
+                    anchors.fill: parent
+                    RowLayout {
                         Layout.fillWidth: true
-                        Text {
-                            id: _test
-                            text: zynqtgui.current_qml_page.objectName
+                        QQC2.Label {
+                            text: "Simplified"
+                            font.capitalization: Font.AllUppercase
+                            font.weight: Font.ExtraBold
+                            font.family: "Hack"
+                            font.pointSize: 20
+                            Layout.alignment: Qt.AlignTop
+
+                            MouseArea {
+                                anchors.fill: parent
+                                onClicked: root.debugMode = !root.debugMode
+                            }
+                        }
+
+                        Item {
+                            Layout.fillWidth: true
+                            Text {
+                                id: _test
+                                text: root.objectName
+                            }
+                        }
+
+                        QQC2.Label {
+                            text: zynqtgui.curlayerEngineName
+                            Layout.alignment: Qt.AlignTop
+                            // font.capitalization: Font.AllUppercase
+                            font.weight: Font.ExtraBold
+                            font.family: "Hack"
+                            font.pointSize: 20
                         }
                     }
 
-                    QQC2.Label {
-                        text: zynqtgui.curlayerEngineName
-                        Layout.alignment: Qt.AlignTop
-                        // font.capitalization: Font.AllUppercase
-                        font.weight: Font.ExtraBold
-                        font.family: "Hack"
-                        font.pointSize: 20
+                    RowLayout {
+
+                        Layout.fillWidth: true
+                        Layout.fillHeight: true
+                        spacing: 5
+
+                        Item {
+                            Layout.fillWidth: true
+                            Layout.fillHeight: true
+                            Layout.margins: 5
+
+                            RowLayout {
+                                anchors.fill: parent
+                                spacing: 5
+
+                                Here.MultiController {
+                                    id: _multiFilterAttackController
+                                    debugMode: root.debugMode
+                                    title: "Filter Attack"
+                                    Layout.fillWidth: true
+                                    Layout.fillHeight: true
+                                    highlighted : _slider.pressed
+                                    controllersIds: root.currentEngineId != null && root.synthMap[root.currentEngineId] != null && root.synthMap[root.currentEngineId].filterAttack ? root.synthMap[root.currentEngineId].filterAttack : []
+                                    knobControl : _slider
+                                    onTapped: {
+                                        focusIndex = 0
+                                        focusOrder[focusIndex].forceActiveFocus()
+                                    }
+
+                                    Here.Slider {
+                                        id: _slider
+                                        objectName: "FilterAttack"
+                                        Layout.fillHeight: true
+                                        Layout.alignment: Qt.AlignCenter
+                                        orientation: Qt.Vertical
+                                        stepSize: _multiFilterAttackController.stepSize
+                                        from:_multiFilterAttackController.from
+                                        to:_multiFilterAttackController.to
+                                        value: _multiFilterAttackController.value
+                                        onMoved:_multiFilterAttackController.setValue(value)
+                                    }
+                                }
+
+                                Here.MultiController {
+                                    id: _multiFilterReleaseController
+                                    title: "Filter Release"
+                                    Layout.fillWidth: true
+                                    Layout.fillHeight: true
+                                    highlighted : _sliderFRel.pressed
+                                    controllersIds: root.currentEngineId != null && root.synthMap[root.currentEngineId] != null && root.synthMap[root.currentEngineId].filterRelease ? root.synthMap[root.currentEngineId].filterRelease : []
+                                    debugMode: root.debugMode
+                                    knobControl : _sliderFRel
+                                    onTapped: {
+                                        focusIndex = 1
+                                        focusOrder[focusIndex].forceActiveFocus()
+                                    }
+
+                                    Here.Slider {
+                                        id: _sliderFRel
+                                        objectName: "FilterAttack"
+                                        Layout.fillHeight: true
+                                        Layout.alignment: Qt.AlignCenter
+                                        orientation: Qt.Vertical
+                                        stepSize: _multiFilterReleaseController.stepSize
+                                        from: _multiFilterReleaseController.from
+                                        to: _multiFilterReleaseController.to
+                                        value: _multiFilterReleaseController.value
+                                        onMoved: _multiFilterReleaseController.setValue(value)
+                                    }
+                                }
+                            }
+                        }
+
+                        Item {
+                            Layout.fillWidth: true
+                            Layout.fillHeight: true
+                            Layout.margins: 5
+
+                            ColumnLayout {
+
+                                anchors.fill: parent
+                                spacing: 5
+
+                                Here.MultiController {
+                                    id: _multiCutoffController
+                                    debugMode: root.debugMode
+                                    title: "Cutoff"
+                                    Layout.alignment: Qt.AlignCenter
+                                    Layout.fillHeight: true
+                                    Layout.fillWidth: true
+                                    controllersIds: root.currentEngineId != null && root.synthMap[root.currentEngineId] != null && root.synthMap[root.currentEngineId].cutoff ? root.synthMap[root.currentEngineId].cutoff : []
+                                    knobControl: _cutoffDial
+                                    onTapped: {
+                                        focusIndex = 2
+                                        focusOrder[focusIndex].forceActiveFocus()
+                                    }
+
+                                    Here.Dial {
+                                        id: _cutoffDial
+                                        text: _multiCutoffController.displayText
+                                        implicitWidth: height
+                                        Layout.fillHeight: true
+                                        Layout.alignment: Qt.AlignCenter
+                                        // orientation: Qt.Vertical
+                                        from: _multiCutoffController.from
+                                        to: _multiCutoffController.to
+                                        stepSize: _multiCutoffController.stepSize
+                                        value: _multiCutoffController.value > 0 ?_multiCutoffController.value  : 0
+                                        onMoved: _multiCutoffController.setValue(value)
+                                        onValueChanged: _multiCutoffController.setValue(value)
+
+                                        onVisibleChanged: {
+                                            _cutoffDial.value = Qt.binding(()=>{return _multiCutoffController.value})
+                                        }
+
+                                        Component.onCompleted: {
+                                            _cutoffDial.value = Qt.binding(()=>{return _multiCutoffController.value})
+                                        }
+                                    }
+
+                                }
+
+                                RowLayout {
+                                    Layout.fillWidth: true
+                                    Layout.preferredHeight: 150
+                                    Layout.maximumHeight: 150
+
+                                    Here.MultiController {
+                                        id: _multiResController
+                                        title: "Resonance"
+                                        Layout.alignment: Qt.AlignCenter
+                                        Layout.fillHeight: true
+                                        Layout.fillWidth: true
+                                        highlighted : _resDial.pressed
+                                        controllersIds: root.currentEngineId != null && root.synthMap[root.currentEngineId] != null && root.synthMap[root.currentEngineId].resonance ? root.synthMap[root.currentEngineId].resonance : []
+                                        debugMode: root.debugMode
+                                        knobControl : _resDial
+                                        onTapped: {
+                                            focusIndex = 3
+                                            focusOrder[focusIndex].forceActiveFocus()
+                                        }
+
+                                        Here.Dial {
+                                            id: _resDial
+                                            Layout.fillHeight: true
+                                            implicitWidth: height
+                                            Layout.alignment: Qt.AlignCenter
+                                            // orientation: Qt.Vertical
+                                            stepSize: _multiResController.stepSize
+                                            from:_multiResController.from
+                                            to:_multiResController.to
+                                            value: _multiResController.value
+                                            onMoved:_multiResController.setValue(value)
+                                        }
+                                    }
+
+                                    Here.FilterTypeController {
+                                        id: _multiTypeController
+                                        title: "Type"
+                                        Layout.alignment: Qt.AlignCenter
+                                        Layout.fillHeight: true
+                                        Layout.fillWidth: true
+                                        highlighted : _typeDial.pressed
+                                        controllersIds: root.currentEngineId != null && root.synthMap[root.currentEngineId] != null && root.synthMap[root.currentEngineId].filterType ? root.synthMap[root.currentEngineId].filterType : []
+                                        debugMode: root.debugMode
+                                        knobControl : _typeDial
+
+                                        Here.Dial {
+                                            id: _typeDial
+                                            Layout.fillHeight: true
+                                            implicitWidth: height
+                                            Layout.alignment: Qt.AlignCenter
+                                            // orientation: Qt.Vertical
+                                            from:_multiTypeController.from
+                                            to:_multiTypeController.to
+                                            value: _multiTypeController.value
+                                            stepSize: _multiTypeController.stepSize
+                                            onMoved:_multiTypeController.setValue(value)
+                                        }
+                                    }
+                                }
+                            }
+                        }
+
+                        Item {
+                            Layout.fillWidth: true
+                            Layout.fillHeight: true
+                            Layout.margins: 5
+
+                            RowLayout {
+                                anchors.fill: parent
+                                spacing: 5
+
+                                Here.MultiController {
+                                    debugMode: root.debugMode
+                                    id: _multiAmpAttackController
+                                    title: "Amp Attack"
+                                    Layout.fillWidth: true
+                                    Layout.fillHeight: true
+                                    highlighted : _sliderAAtack.pressed
+                                    controllersIds: root.currentEngineId != null && root.synthMap[root.currentEngineId] != null && root.synthMap[root.currentEngineId].ampAttack ? root.synthMap[root.currentEngineId].ampAttack : []
+
+                                    knobControl : _sliderAAtack
+                                    onTapped: {
+                                        focusIndex = 5
+                                        focusOrder[focusIndex].forceActiveFocus()
+                                    }
+                                    Here.Slider {
+                                        id: _sliderAAtack
+                                        objectName: "FilterAttack"
+                                        Layout.fillHeight: true
+                                        Layout.alignment: Qt.AlignCenter
+                                        orientation: Qt.Vertical
+                                        stepSize: _multiAmpAttackController.stepSize
+                                        from:_multiAmpAttackController.from
+                                        to: _multiAmpAttackController.to
+                                        value: _multiAmpAttackController.value
+                                        onMoved: _multiAmpAttackController.setValue(value)
+
+                                        onVisibleChanged: {
+                                            _sliderAAtack.value = Qt.binding(()=>{return _multiAmpAttackController.value})
+                                        }
+
+                                        Component.onCompleted: {
+                                            _sliderAAtack.value = Qt.binding(()=>{return _multiAmpAttackController.value})
+                                        }
+                                    }
+                                }
+
+                                Here.MultiController {
+                                    id: _multiAmpReleaseController
+                                    debugMode: root.debugMode
+                                    title: "Amp Release"
+                                    Layout.fillWidth: true
+                                    Layout.fillHeight: true
+                                    highlighted : _sliderARel.pressed
+                                    controllersIds: root.currentEngineId != null && root.synthMap[root.currentEngineId] != null && root.synthMap[root.currentEngineId].ampRelease ? root.synthMap[root.currentEngineId].ampRelease : []
+                                    knobControl : _sliderARel
+                                    onTapped: {
+                                        focusIndex = 6
+                                        focusOrder[focusIndex].forceActiveFocus()
+                                    }
+                                    Here.Slider {
+                                        id: _sliderARel
+                                        objectName: "FilterAttack"
+                                        Layout.fillHeight: true
+                                        Layout.alignment: Qt.AlignCenter
+                                        orientation: Qt.Vertical
+                                        stepSize: _multiAmpReleaseController.stepSize
+                                        from: _multiAmpReleaseController.from
+                                        to: _multiAmpReleaseController.to
+                                        value: _multiAmpReleaseController.value
+                                        onMoved:_multiAmpReleaseController.setValue(value)
+                                    }
+                                }
+                            }
+                        }
                     }
                 }
 
-                RowLayout {
-                    Layout.fillWidth: true
-                    Layout.fillHeight: true
-                    spacing: 5
-
-                    Item {
-                        Layout.fillWidth: true
-                        Layout.fillHeight: true
-                        Layout.margins: 5
-
-                        RowLayout {
-                            anchors.fill: parent
-                            spacing: 5
-
-                            Here.MultiController {
-                                id: _multiFilterAttackController
-                                debugMode: root.debugMode
-                                title: "Filter Attack"
-                                Layout.fillWidth: true
-                                Layout.fillHeight: true
-                                highlighted : _slider.pressed
-                                controllersIds: root.currentEngineId != null && root.synthMap[root.currentEngineId] != null && root.synthMap[root.currentEngineId].filterAttack ? root.synthMap[root.currentEngineId].filterAttack : []
-
-                                Here.Slider {
-                                    id: _slider
-                                    objectName: "FilterAttack"
-                                    Layout.fillHeight: true
-                                    Layout.alignment: Qt.AlignCenter
-                                    orientation: Qt.Vertical
-                                    from:_multiFilterAttackController.from
-                                    to:_multiFilterAttackController.to
-                                    value: _multiFilterAttackController.value
-                                    onMoved:_multiFilterAttackController.setValue(value)
-                                }
-                            }
-
-                            Here.MultiController {
-                                id: _multiFilterReleaseController
-                                title: "Filter Release"
-                                Layout.fillWidth: true
-                                Layout.fillHeight: true
-                                highlighted : _sliderFRel.pressed
-                                controllersIds: root.currentEngineId != null && root.synthMap[root.currentEngineId] != null && root.synthMap[root.currentEngineId].filterRelease ? root.synthMap[root.currentEngineId].filterRelease : []
-                                debugMode: root.debugMode
-
-                                Here.Slider {
-                                    id: _sliderFRel
-                                    objectName: "FilterAttack"
-                                    Layout.fillHeight: true
-                                    Layout.alignment: Qt.AlignCenter
-                                    orientation: Qt.Vertical
-                                    from: _multiFilterReleaseController.from
-                                    to: _multiFilterReleaseController.to
-                                    value: _multiFilterReleaseController.value
-                                    onMoved: _multiFilterReleaseController.setValue(value)
-                                }
-                            }
+                function cuiaCallback(cuia) {
+                    _test.text = "cuia"
+                    switch (cuia) {
+                    case "SELECT_UP":
+                    case "SELECT_DOWN":
+                        if (root.lastSelectedObj === control1) {
+                            root.lastSelectedObj = control2
+                        } else if (root.lastSelectedObj === control2) {
+                            root.lastSelectedObj = control1
+                        } else if (root.lastSelectedObj === control3) {
+                            root.lastSelectedObj = control4
+                        } else if (root.lastSelectedObj === control4) {
+                            root.lastSelectedObj = control3
+                        } else {
+                            root.lastSelectedObj = control1
                         }
-                    }
 
-                    Item {
-                        Layout.fillWidth: true
-                        Layout.fillHeight: true
-                        Layout.margins: 5
-
-                        ColumnLayout {
-
-                            anchors.fill: parent
-                            spacing: 5
-
-                            Here.MultiController {
-                                id: _multiCutoffController
-                                debugMode: root.debugMode
-                                title: "Cutoff"
-                                Layout.alignment: Qt.AlignCenter
-                                Layout.fillHeight: true
-                                Layout.fillWidth: true
-                                controllersIds: root.currentEngineId != null && root.synthMap[root.currentEngineId] != null && root.synthMap[root.currentEngineId].cutoff ? root.synthMap[root.currentEngineId].cutoff : []
-
-                                Here.Dial {
-                                    id: _cutoffDial
-                                    text: _multiCutoffController.displayText
-                                    implicitWidth: height
-                                    Layout.fillHeight: true
-                                    Layout.alignment: Qt.AlignCenter
-                                    // orientation: Qt.Vertical
-                                    from: _multiCutoffController.from
-                                    to: _multiCutoffController.to
-                                    value: _multiCutoffController.value > 0 ?_multiCutoffController.value  : 0
-                                    onMoved:_multiCutoffController.setValue(value)
-
-                                    onVisibleChanged: {
-                                        _cutoffDial.value = Qt.binding(()=>{return _multiCutoffController.value})
-                                    }
-
-                                    Component.onCompleted: {
-                                        _cutoffDial.value = Qt.binding(()=>{return _multiCutoffController.value})
-                                    }
-                                }
-
-                            }
-
-                            RowLayout {
-                                Layout.fillWidth: true
-                                Layout.preferredHeight: 150
-                                Layout.maximumHeight: 150
-
-                                Here.MultiController {
-                                    id: _multiResController
-                                    title: "Resonance"
-                                    Layout.alignment: Qt.AlignCenter
-                                    Layout.fillHeight: true
-                                    Layout.fillWidth: true
-                                    highlighted : _resDial.pressed
-                                    controllersIds: root.currentEngineId != null && root.synthMap[root.currentEngineId] != null && root.synthMap[root.currentEngineId].resonance ? root.synthMap[root.currentEngineId].resonance : []
-                                    debugMode: root.debugMode
-
-                                    Here.Dial {
-                                        id: _resDial
-                                        Layout.fillHeight: true
-                                        implicitWidth: height
-                                        Layout.alignment: Qt.AlignCenter
-                                        // orientation: Qt.Vertical
-                                        from:_multiResController.from
-                                        to:_multiResController.to
-                                        value: _multiResController.value
-                                        onMoved:_multiResController.setValue(value)
-                                    }
-                                }
-
-                                Here.FilterTypeController {
-                                    id: _multiTypeController
-                                    title: "Type"
-                                    Layout.alignment: Qt.AlignCenter
-                                    Layout.fillHeight: true
-                                    Layout.fillWidth: true
-                                    highlighted : _typeDial.pressed
-                                    controllersIds: root.currentEngineId != null && root.synthMap[root.currentEngineId] != null && root.synthMap[root.currentEngineId].filterType ? root.synthMap[root.currentEngineId].filterType : []
-                                    debugMode: root.debugMode
-
-                                    Here.Dial {
-                                        id: _typeDial
-                                        Layout.fillHeight: true
-                                        implicitWidth: height
-                                        Layout.alignment: Qt.AlignCenter
-                                        // orientation: Qt.Vertical
-                                        from:_multiTypeController.from
-                                        to:_multiTypeController.to
-                                        value: _multiTypeController.value
-                                        stepSize: _multiTypeController.stepSize
-                                        onMoved:_multiTypeController.setValue(value)
-                                    }
-                                }
-                            }
+                        return true
+                    case "NAVIGATE_LEFT":
+                    case "NAVIGATE_RIGHT":
+                        if (root.lastSelectedObj === control1) {
+                            root.lastSelectedObj = control3
+                        } else if (root.lastSelectedObj === control2) {
+                            root.lastSelectedObj = control4
+                        } else if (root.lastSelectedObj === control3) {
+                            root.lastSelectedObj = control1
+                        } else if (root.lastSelectedObj === control4) {
+                            root.lastSelectedObj = control2
+                        } else {
+                            root.lastSelectedObj = control1
                         }
-                    }
+                        return true
+                    case "KNOB0_UP":
+                        // focusOrder[focusIndex].increaseValue()
+                        focusOrder[focusIndex].knobControl.increase()
+                        return true
+                    case "KNOB0_DOWN":
+                        // focusOrder[focusIndex].decreaseValue()
+                        focusOrder[focusIndex].knobControl.decrease()
+                        return true
+                    case "KNOB1_UP":
+                    case "KNOB1_DOWN":
+                    case "KNOB2_UP":
+                    case "KNOB2_DOWN":
+                        return true
+                    case "KNOB3_UP":
+                        if(focusIndex === focusOrder.length-1)
+                            focusIndex = 0
+                        else
+                            focusIndex++;
 
-                    Item {
-                        Layout.fillWidth: true
-                        Layout.fillHeight: true
-                        Layout.margins: 5
+                        focusOrder[focusIndex].forceActiveFocus()
+                        return true
+                    case "KNOB3_DOWN":
+                        if(focusIndex === 0)
+                            focusIndex = focusOrder.length-1
+                        else
+                            focusIndex--;
 
-                        RowLayout {
-                            anchors.fill: parent
-                            spacing: 5
-                            Here.MultiController {
-                                debugMode: root.debugMode
-                                id: _multiAmpAttackController
-                                title: "Amp Attack"
-                                Layout.fillWidth: true
-                                Layout.fillHeight: true
-                                highlighted : _sliderAAtack.pressed
-                                controllersIds: root.currentEngineId != null && root.synthMap[root.currentEngineId] != null && root.synthMap[root.currentEngineId].ampAttack ? root.synthMap[root.currentEngineId].ampAttack : []
-
-                                Here.Slider {
-                                    id: _sliderAAtack
-                                    objectName: "FilterAttack"
-                                    Layout.fillHeight: true
-                                    Layout.alignment: Qt.AlignCenter
-                                    orientation: Qt.Vertical
-                                    from:_multiAmpAttackController.from
-                                    to:_multiAmpAttackController.to
-                                    value: _multiAmpAttackController.value
-                                    onMoved:_multiAmpAttackController.setValue(value)
-                                }
-                            }
-
-                            Here.MultiController {
-                                id: _multiAmpReleaseController
-                                debugMode: root.debugMode
-                                title: "Amp Release"
-                                Layout.fillWidth: true
-                                Layout.fillHeight: true
-                                highlighted : _sliderARel.pressed
-                                controllersIds: root.currentEngineId != null && root.synthMap[root.currentEngineId] != null && root.synthMap[root.currentEngineId].ampRelease ? root.synthMap[root.currentEngineId].ampRelease : []
-
-                                Here.Slider {
-                                    id: _sliderARel
-                                    objectName: "FilterAttack"
-                                    Layout.fillHeight: true
-                                    Layout.alignment: Qt.AlignCenter
-                                    orientation: Qt.Vertical
-                                    from: _multiAmpReleaseController.from
-                                    to: _multiAmpReleaseController.to
-                                    value: _multiAmpReleaseController.value
-                                    onMoved:_multiAmpReleaseController.setValue(value)
-                                }
-                            }
-                        }
+                        focusOrder[focusIndex].forceActiveFocus()
+                        return true
+                    case "SWITCH_SELECT_SHORT":
+                    case "SWITCH_SELECT_BOLD":
+                        return true
+                    default:
+                        return false;
                     }
                 }
             }

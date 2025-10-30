@@ -23,7 +23,7 @@ For a full copy of the GNU General Public License see the LICENSE.txt file.
 ******************************************************************************
 */
 
-import QtQuick 2.10
+import QtQuick 2.15
 import QtQuick.Layouts 1.4
 import QtQuick.Controls 2.2 as QQC2
 import org.kde.kirigami 2.4 as Kirigami
@@ -34,6 +34,7 @@ import QtGraphicalEffects 1.15
 QQC2.Control {
 
     id: root
+    focus: true
     enabled: controllersIds.length > 0
     opacity: enabled ? 1 : 0.5
     property var controllersIds : []
@@ -42,6 +43,7 @@ QQC2.Control {
     property double value : 0.0
     property double from: 0.0
     property double to : 0.0
+    property double stepSize: 1
 
     property color highlightColor : "#5765f2"
     property color backgroundColor: "#333"
@@ -53,6 +55,9 @@ QQC2.Control {
     property alias title : _label1.text
     readonly property string displayText : (value / to).toFixed(2)
     property bool debugMode: false
+
+    property Item knobControl : null
+    signal tapped()
 
     Repeater {
         id: watcher
@@ -90,6 +95,7 @@ QQC2.Control {
 
                     root.from = fromValue/i
                     root.to = toValue/i
+                    root.stepSize = ctrl.step_size === 0 ? 1 : ctrl.step_size
 
                     calculate()
                 }
@@ -102,6 +108,22 @@ QQC2.Control {
         }
     }
 
+    background: Item {
+
+
+        TapHandler {
+            onTapped: root.tapped()
+        }
+
+        Rectangle {
+            anchors.fill: parent
+            anchors.margins: -4
+            color: "transparent"
+            border.color: "white"
+            border.width: 2
+            visible: root.activeFocus
+        }
+    }
 
     contentItem: Item {
         // Text {
@@ -293,6 +315,14 @@ QQC2.Control {
         }
 
         calculate()
+    }    
+
+    function increaseValue() {
+        setValue(root.value+stepSize)
+    }
+
+    function decreaseValue() {
+          setValue(root.value-stepSize)
     }
 
     function update() {

@@ -35,6 +35,7 @@ import QtGraphicalEffects 1.15
 QQC2.Dial {
 
     id: dial
+    focus: false
 
     implicitWidth: 300
     implicitHeight: 300
