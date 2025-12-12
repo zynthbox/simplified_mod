@@ -27,7 +27,7 @@ import QtQuick 2.15
 import QtQuick.Layouts 1.4
 import QtQuick.Controls 2.15 as QQC2
 import org.kde.kirigami 2.4 as Kirigami
-import Zynthian 1.0 as Zynthian
+import io.zynthbox.ui 1.0 as Zynthian
 import "." as Here
 import QtGraphicalEffects 1.15
 
