@@ -1,4 +1,13 @@
 {
+    "KPlugin": {
+        "Id": "io.zynthbox.mod.simplified",
+        "Name": "Simplified",
+        "Authors": [{ "Name": "Camilo H." }],
+        "Version": "0.1.0",
+        "License": "GPL-2.0+"
+    },
+    "KPackageStructure": "Zynthbox/Mod",
+    "Name": "Simplified",
     "Engine": "",
     "Engines": [
         "ZBP_SYNTH_00008",
@@ -11,6 +20,6 @@
         "ZBP_SYNTH_00009",
         "ZBP_SYNTH_00006",
         "ZBP_SYNTH_00013",
-        "ZBP_SYNTH_00012"],
-    "Name" : "Simplified"
+        "ZBP_SYNTH_00012"
+    ]
 }
