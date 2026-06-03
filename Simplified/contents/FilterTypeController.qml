@@ -2,9 +2,9 @@
 ******************************************************************************
 ZYNTHIAN PROJECT: Zynthian Qt GUI
 
-Main Class and Program for Zynthian GUI
+Filter type controller for engine-specific filter parameters
 
-Copyright (C) 2021 Marco Martin <mart@kde.org>
+Copyright (C) 2026 Camilo Higuita <milo.h@aol.com>
 
 ******************************************************************************
 
@@ -23,81 +23,74 @@ For a full copy of the GNU General Public License see the LICENSE.txt file.
 ******************************************************************************
 */
 
-import QtQuick 2.10
+import QtQuick 2.15
 import QtQuick.Layouts 1.4
-import QtQuick.Controls 2.2 as QQC2
+import QtQuick.Controls 2.15 as QQC2
+import QtGraphicalEffects 1.15
 import org.kde.kirigami 2.4 as Kirigami
 import io.zynthbox.ui 1.0 as Zynthian
-import "." as Here
-import QtGraphicalEffects 1.15
 
 QQC2.Control {
-
     id: root
     enabled: controllersIds.length > 0
     opacity: enabled ? 1 : 0.5
-    property var controllersIds : []
-    default property alias content : _container.data
 
-    property double value : 0.0
+    property var controllersIds: []
+    default property alias content: _container.data
+
+    property double value: 0.0
     property double from: 0.0
-    property double to : 0.0
-    property int stepSize : 1
+    property double to: 0.0
+    property int stepSize: 1
     property string printValue
 
-    property color highlightColor : Kirigami.Theme.highlightColor /*"#5765f2"*/
-    property color backgroundColor: Kirigami.Theme.backgroundColor /*"#333"*/
-    property color foregroundColor: Kirigami.Theme.textColor/*"#fafafa"*/
-    property color alternativeColor : Kirigami.Theme.alternateBackgroundColor /* "#16171C"*/
+    property color highlightColor: Kirigami.Theme.highlightColor
+    property color backgroundColor: Kirigami.Theme.backgroundColor
+    property color foregroundColor: Kirigami.Theme.textColor
+    property color alternativeColor: Kirigami.Theme.alternateBackgroundColor
 
-    property bool highlighted : false
-
-    property alias title : _label1.text
-    readonly property string displayText : printValue
+    property bool highlighted: false
+    property alias title: _label1.text
+    readonly property string displayText: printValue
     property bool debugMode: false
     property int pendingParamIndexUpdate: 0
-    property Item knobControl : null
+    property Item knobControl: null
 
     Repeater {
         id: watcher
         model: root.controllersIds
-        // onCountChanged: calculate()
 
         delegate: Item {
-            id:  controlRoot
-            objectName: "Controller#"+symbol
-            property string symbol : modelData
+            id: controlRoot
+            objectName: "Controller#" + symbol
+            property string symbol: modelData
 
             Zynthian.ControllerGroup {
                 id: controller
                 symbol: controlRoot.symbol
             }
 
-            readonly property var value : controller != null && controller.ctrl != null ? controller.ctrl.value : 0
-            readonly property QtObject ctrl : controller.ctrl
-            readonly property int mindex : index
+            readonly property var value: controller != null && controller.ctrl != null ? controller.ctrl.value : 0
+            readonly property QtObject ctrl: controller.ctrl
+            readonly property int mindex: index
 
             onCtrlChanged: {
                 if (controller != null && controller.ctrl != null) {
-                    if(watcher.count<=0)
+                    if (watcher.count <= 0)
                         return
 
-                    var item =  watcher.itemAt(controlRoot.mindex)
+                    var item = watcher.itemAt(controlRoot.mindex)
                     if (item != null && item.ctrl != null) {
-                        var fromValue = item.ctrl.value0
-                        var toValue = item.ctrl.max_value
-
-                        root.from = fromValue
-                        root.to = toValue
+                        root.from = item.ctrl.value0
+                        root.to = item.ctrl.max_value
                         root.stepSize = item.ctrl ? (item.ctrl.step_size === 0 ? 1 : item.ctrl.step_size) : 0
-
                         calculate(mindex)
                     }
                 }
             }
 
             onValueChanged: {
-                if(root.visible)
+                if (root.visible)
                     calculate(mindex)
                 else
                     root.pendingParamIndexUpdate = mindex
@@ -106,7 +99,6 @@ QQC2.Control {
     }
 
     background: Item {
-
         Rectangle {
             anchors.fill: parent
             anchors.margins: -4
@@ -153,7 +145,6 @@ QQC2.Control {
                 fontSizeMode: Text.Fit
                 minimumPointSize: 6
                 wrapMode: Text.NoWrap
-
                 font.letterSpacing: 2
                 color: root.foregroundColor
                 padding: 4
@@ -164,7 +155,6 @@ QQC2.Control {
                 }
 
                 background: Rectangle {
-
                     border.width: 2
                     border.color: root.backgroundColor
                     color: root.alternativeColor
@@ -173,13 +163,11 @@ QQC2.Control {
                     Rectangle {
                         anchors.fill: parent
                         anchors.margins: 1
-
                         visible: false
                         id: _recLabel
                         color: root.highlighted ? root.highlightColor : root.alternativeColor
                         border.color: Qt.darker(color, 2)
                         radius: 4
-
                     }
 
                     InnerShadow {
@@ -210,21 +198,20 @@ QQC2.Control {
                 active: visible
                 visible: enabled && root.debugMode
                 asynchronous: true
-
                 Layout.fillWidth: true
-                sourceComponent: QQC2.Control {
 
+                sourceComponent: QQC2.Control {
                     padding: 4
                     contentItem: Column {
                         Repeater {
                             model: watcher.count
-
                             delegate: Text {
-
-                                property Item obj : watcher.itemAt(modelData)
+                                property Item obj: watcher.itemAt(modelData)
                                 width: parent.width
                                 color: root.foregroundColor
-                                text:  obj != null && obj.ctrl != null ? "%1 : %2 | %3".arg(obj.ctrl.title).arg(obj.ctrl.value.toFixed(2)).arg(obj.ctrl.value_print) : ""
+                                text: obj != null && obj.ctrl != null
+                                      ? "%1 : %2 | %3".arg(obj.ctrl.title).arg(obj.ctrl.value.toFixed(2)).arg(obj.ctrl.value_print)
+                                      : ""
                                 font.pointSize: 6
                                 fontSizeMode: Text.Fit
                                 minimumPointSize: 4
@@ -234,7 +221,6 @@ QQC2.Control {
                     }
 
                     background: Rectangle {
-
                         border.width: 2
                         border.color: root.alternativeColor
                         color: root.backgroundColor
@@ -243,13 +229,11 @@ QQC2.Control {
                         Rectangle {
                             anchors.fill: parent
                             anchors.margins: 1
-
                             visible: false
                             id: _infoRec
                             color: root.alternativeColor
                             border.color: Qt.darker(color, 2)
                             radius: 4
-
                         }
 
                         InnerShadow {
@@ -264,22 +248,20 @@ QQC2.Control {
                     }
                 }
             }
-
         }
     }
 
     onVisibleChanged: {
-        if(visible)
-        {
+        if (visible) {
             calculate(root.pendingParamIndexUpdate)
             var value = root.value
             setValue(value)
         }
     }
 
-    function calculate(index = 0) {
-
-        if(watcher.count<=0)
+    function calculate(index) {
+        if (index === undefined) index = 0
+        if (watcher.count <= 0)
             return
 
         var item = watcher.itemAt(index)
@@ -288,23 +270,17 @@ QQC2.Control {
     }
 
     function setValue(value) {
-        // if(value === root.value)
-        //     return
-
-        // var percent = value / root.to
-        var i = 0
-        for (i; i < watcher.count; i++) {
+        for (var i = 0; i < watcher.count; i++) {
             watcher.itemAt(i).ctrl.value = value
         }
-
         calculate()
     }
 
     function increaseValue() {
-        setValue(root.value+stepSize)
+        setValue(root.value + stepSize)
     }
 
     function decreaseValue() {
-          setValue(root.value-stepSize)
+        setValue(root.value - stepSize)
     }
 }
