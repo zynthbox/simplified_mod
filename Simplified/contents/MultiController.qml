@@ -28,21 +28,20 @@ import QtQuick.Layouts 1.4
 import QtQuick.Controls 2.15 as QQC2
 import QtGraphicalEffects 1.15
 import org.kde.kirigami 2.4 as Kirigami
-import io.zynthbox.ui 1.0 as Zynthian
 
 QQC2.Control {
     id: root
     focus: true
-    enabled: controllersIds.length > 0
+    enabled: root.ctrl ? root.ctrl.controlsCount > 0 : false
     opacity: enabled ? 1 : 0.5
 
-    property var controllersIds: []
+    property QtObject ctrl : null
     default property alias content: _container.data
 
-    property double value: 0.0
-    property double from: 0.0
-    property double to: 0.0
-    property double stepSize: 1
+    property double value: ctrl ? ctrl.value : 0.0
+    property double from: ctrl ? ctrl.value_min : 0.0
+    property double to: ctrl ? ctrl.value_max : 0.0
+    property double stepSize: ctrl ? ctrl.step_size : 1.0
 
     property color highlightColor: "#5765f2"
     property color backgroundColor: "#333"
@@ -51,58 +50,11 @@ QQC2.Control {
 
     property bool highlighted: false
     property alias title: _label1.text
-    readonly property string displayText: root.to > 0 ? (value / to).toFixed(2) : "0.00"
+    readonly property string displayText: ctrl ? ctrl.value +"%" : "n/a"
     property bool debugMode: false
     property Item knobControl: null
 
     signal tapped()
-
-    Repeater {
-        id: watcher
-        model: root.controllersIds
-
-        delegate: Item {
-            id: controlRoot
-            objectName: "Controller#" + symbol
-            property string symbol: modelData
-
-            Zynthian.ControllerGroup {
-                id: controller
-                symbol: controlRoot.symbol
-            }
-
-            readonly property var value: controller.ctrl != null ? controller.ctrl.value : 0
-            readonly property QtObject ctrl: controller.ctrl
-
-            onCtrlChanged: {
-                if (controller.ctrl != null) {
-                    var fromValue = 0.0
-                    var toValue = 0.0
-                    var i = 0
-
-                    for (i; i < watcher.count; i++) {
-                        var item = watcher.itemAt(i)
-                        if (item != null && item.ctrl != null) {
-                            fromValue += item.ctrl.value0
-                            toValue += item.ctrl.max_value
-                        } else {
-                            break
-                        }
-                    }
-
-                    root.from = fromValue / i
-                    root.to = toValue / i
-                    root.stepSize = ctrl.step_size === 0 ? 1 : ctrl.step_size
-                    calculate()
-                }
-            }
-
-            onValueChanged: {
-                if (root.visible)
-                    calculate()
-            }
-        }
-    }
 
     background: Item {
         TapHandler {
@@ -203,92 +155,13 @@ QQC2.Control {
                     }
                 }
             }
-
-            Loader {
-                id: _loader
-                active: visible
-                visible: enabled && root.debugMode
-                Layout.fillWidth: true
-
-                sourceComponent: QQC2.Control {
-                    padding: 4
-                    contentItem: Column {
-                        Repeater {
-                            model: watcher.count
-                            delegate: Text {
-                                property Item obj: watcher.itemAt(modelData)
-                                width: parent.width
-                                color: root.foregroundColor
-                                text: obj != null && obj.ctrl != null
-                                      ? "%1 : %2 | %3".arg(obj.ctrl.title).arg(obj.ctrl.value.toFixed(2)).arg((obj.ctrl.value / obj.ctrl.max_value).toFixed(2))
-                                      : "Error"
-                                font.pointSize: 6
-                                fontSizeMode: Text.Fit
-                                minimumPointSize: 4
-                                wrapMode: Text.NoWrap
-                            }
-                        }
-                    }
-
-                    background: Rectangle {
-                        border.width: 2
-                        border.color: root.alternativeColor
-                        color: root.backgroundColor
-                        radius: 4
-
-                        Rectangle {
-                            anchors.fill: parent
-                            anchors.margins: 1
-                            visible: false
-                            id: _infoRec
-                            color: root.alternativeColor
-                            border.color: Qt.darker(color, 2)
-                            radius: 4
-                        }
-
-                        InnerShadow {
-                            anchors.fill: _infoRec
-                            radius: 8.0
-                            samples: 16
-                            horizontalOffset: -3
-                            verticalOffset: 1
-                            color: "#b0000000"
-                            source: _infoRec
-                        }
-                    }
-                }
-            }
         }
     }
 
-    onVisibleChanged: {
-        if (visible)
-            calculate()
-    }
-
-    function calculate() {
-        if (!root.visible)
-            return
-
-        var sumValue = 0.0
-        var i = 0
-        for (i; i < watcher.count; i++) {
-            var item = watcher.itemAt(i)
-            if (item.ctrl)
-                sumValue += item.ctrl.value
+    function setValue(newValue) {
+        if (ctrl) {
+            ctrl.value = newValue
         }
-
-        root.value = sumValue / i
-    }
-
-    function setValue(value) {
-        if (value === root.value)
-            return
-
-        for (var i = 0; i < watcher.count; i++) {
-            watcher.itemAt(i).ctrl.value = value
-        }
-        calculate()
     }
 
     function increaseValue() {

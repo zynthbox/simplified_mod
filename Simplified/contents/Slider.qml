@@ -42,6 +42,7 @@ QQC2.Slider {
     orientation: Qt.Vertical
     padding: 4
     clip: false
+    opacity: enabled ? 1 : 0.5
 
     // Secondary touch-target slider offset to the right for easier interaction
     QQC2.Slider {
@@ -278,20 +279,35 @@ QQC2.Slider {
 
                         Rectangle {
                             id: bulb
-                            property bool highlighted: slider.position > position
-                            property double position: 1 - ((index * 1.07) / _repeater.count)
+                            property double threshold: 1 - (index / (_repeater.count - 1))
+                            property bool highlighted: _repeater.count > 1 && slider.position > 0 && slider.position >= threshold
+                            property bool active: highlighted
                             anchors.fill: parent
                             radius: 5
-                            opacity: highlighted ? 1.0 : 0.9
+                            opacity: active ? 1.0 : 0.5
                             color: highlighted ? slider.highlightColor : slider.alternativeColor
 
-                            RadialGradient {
-                                visible: bulb.highlighted
-                                anchors.fill: parent
-                                gradient: Gradient {
-                                    GradientStop { position: 0.0; color: Qt.lighter(slider.highlightColor) }
-                                    GradientStop { position: 0.5; color: "transparent" }
+                            onHighlightedChanged: {
+                                if (highlighted) {
+                                    _offTimer.stop()
+                                    active = true
+                                } else {
+                                    _offTimer.start()
                                 }
+                            }
+
+                            Timer {
+                                id: _offTimer
+                                interval: 500
+                                onTriggered: bulb.active = false
+                            }
+
+                            layer.enabled: highlighted
+                            layer.effect: Glow {
+                                radius: 6
+                                samples: 13
+                                spread: 0.4
+                                color: slider.highlightColor
                             }
                         }
                     }

@@ -29,18 +29,36 @@ import QtQuick.Layouts 1.4
 import QtQuick.Controls 2.15 as QQC2
 import org.kde.kirigami 2.4 as Kirigami
 import org.kde.plasma.core 2.0 as PlasmaCore
-import io.zynthbox.ui 1.0 as Zynthian
 import "." as Here
+import io.zynthbox.ui 1.0 as ZUI
 
-QQC2.Pane {
+ZUI.ScreenPage {
     id: root
     objectName: "simpleMod"
     property bool debugMode: false
+
     readonly property string currentEngineId: zynqtgui.curlayerEngineId
+    
+    readonly property QtObject selectedChannel: applicationWindow().selectedChannel
+    readonly property int selectedSlotRow: root.selectedChannel ? root.selectedChannel.selectedSlotRow : 0
+
+    function ctrlFor(controllers) {
+        return root.selectedChannel && controllers ? controllers[root.selectedSlotRow] : null
+    }
+
     focus: true
 
+    background: Rectangle 
+    {
+        color: Kirigami.Theme.backgroundColor
+        opacity: 0.4
+        radius: 10
+    }
+
     property var cuiaCallback: function(cuia) {
-        return _loader.item.cuiaCallback(cuia);
+        if (_loader.item && _loader.item.cuiaCallback)
+            return _loader.item.cuiaCallback(cuia);
+        return false;
     }
 
     Connections {
@@ -53,128 +71,11 @@ QQC2.Pane {
         _loader.active = true
     }
 
-    readonly property var synthMap: {
-        'ZBP_SYNTH_00008': {
-            'cutoff': ["DCF1_CUTOFF", "DCF2_CUTOFF"],
-            'resonance': ['DCF1_RESO', 'DCF2_RESO'],
-            'filterAttack': ['DCF1_ATTACK', 'DCF2_ATTACK'],
-            'filterRelease': ['DCF1_RELEASE', 'DCF2_RELEASE'],
-            'filterType': ['DCF1_TYPE', 'DCF2_TYPE'],
-            'ampAttack': ['DCA1_ATTACK', 'DCA2_ATTACK'],
-            'ampRelease': ['DCA1_RELEASE', 'DCA2_RELEASE']
-        },
-        'ZBP_SYNTH_00012': {
-            'cutoff': ["cutoff"],
-            'resonance': ['resonance'],
-            'filterAttack': ['filterattack'],
-            'filterRelease': ['filterrelease'],
-            'filterType': ['filterenvamount'],
-            'ampAttack': ['attack'],
-            'ampRelease': ['release']
-        },
-        'ZBP_SYNTH_00009': {
-            'cutoff': ["cutoff"],
-            'resonance': ['resonance'],
-            'filterAttack': ['fil_attack'],
-            'filterRelease': ['fil_release'],
-            'filterType': [],
-            'ampAttack': ['amp_attack'],
-            'ampRelease': ['amp_release']
-        },
-        'ZBP_SYNTH_00011': {
-            'cutoff': ["filter cutoff"],
-            'resonance': ['filter resonance'],
-            'filterAttack': [],
-            'filterRelease': [],
-            'filterType': [],
-            'ampAttack': [],
-            'ampRelease': []
-        },
-        'ZBP_SYNTH_00003': {
-            'cutoff': ["flt_hp_cutoff_upper", "flt_hp_cutoff_lower"],
-            'resonance': [],
-            'filterAttack': [],
-            'filterRelease': [],
-            'filterType': [],
-            'ampAttack': [],
-            'ampRelease': []
-        },
-        'ZBP_SYNTH_00006': {
-            'cutoff': ["DCF1_CUTOFF"],
-            'resonance': ['DCF1_RESO'],
-            'filterAttack': ['DCF1_ATTACK'],
-            'filterRelease': ['DCF1_RELEASE'],
-            'filterType': ['DCF1_TYPE'],
-            'ampAttack': ['DCA1_ATTACK'],
-            'ampRelease': ['DCA1_RELEASE']
-        },
-        'ZBP_SYNTH_00001': {
-            'cutoff': ["cutoff"],
-            'resonance': ['resonance'],
-            'filterAttack': [],
-            'filterRelease': [],
-            'filterType': [],
-            'ampAttack': [],
-            'ampRelease': []
-        },
-        'ZBP_SYNTH_00004': {
-            'cutoff': ["cutoff"],
-            'resonance': ['resonance'],
-            'filterAttack': ['filterattack'],
-            'filterRelease': ['filterrelease'],
-            'filterType': ['filtertype'],
-            'ampAttack': ['ampattack'],
-            'ampRelease': ['amprelease']
-        },
-        'ZBP_SYNTH_00002': {
-            'cutoff': ["filter_cutoff"],
-            'resonance': ['filter_resonance'],
-            'filterAttack': ['filter_attack'],
-            'filterRelease': ['filter_release'],
-            'filterType': [],
-            'ampAttack': ['attack'],
-            'ampRelease': ['release']
-        },
-        'ZBP_SYNTH_00013': {
-            'cutoff': ["a_filter1_cutoff", "a_filter2_cutoff", "b_filter1_cutoff", "b_filter2_cutoff"],
-            'resonance': ['a_filter1_resonance', 'a_filter2_resonance', 'b_filter1_resonance', 'b_filter2_resonance'],
-            'filterType': ['a_filter1_type', 'a_filter2_type', 'b_filter1_type', 'b_filter2_type'],
-            'filterAttack': ['a_env1_attack', 'a_env2_attack'],
-            'filterRelease': ['a_env1_release', 'a_env2_release'],
-            'ampAttack': [],
-            'ampRelease': []
-        },
-        'ZBP_SYNTH_00000': {
-            'cutoff': ["cutoff"],
-            'resonance': ['res'],
-            'filterAttack': [],
-            'filterRelease': [],
-            'filterType': ['filter'],
-            'ampAttack': ['adsr_a', 'adsr2_a'],
-            'ampRelease': ['adsr_r', 'adsr2_r']
-        }
-    }
-
-    function controllersForParam(param) {
-        if (root.currentEngineId != null
-            && root.synthMap[root.currentEngineId] != null
-            && root.synthMap[root.currentEngineId][param]) {
-            return root.synthMap[root.currentEngineId][param]
-        }
-        return []
-    }
-
     contentItem: QQC2.Control {
         enabled: root.currentEngineId != null
-        padding: 10
+        padding: 2
 
-        background: Item {
-            PlasmaCore.FrameSvgItem {
-                anchors.fill: parent
-                imagePath: "widgets/tracks-background"
-                colorGroup: PlasmaCore.Theme.ViewColorGroup
-            }
-        }
+        background: null
 
         contentItem: Loader {
             id: _loader
@@ -185,7 +86,6 @@ QQC2.Pane {
                     _multiFilterReleaseController,
                     _multiCutoffController,
                     _multiResController,
-                    _multiTypeController,
                     _multiAmpAttackController,
                     _multiAmpReleaseController
                 ]
@@ -198,18 +98,18 @@ QQC2.Pane {
                     RowLayout {
                         Layout.fillWidth: true
 
-                        QQC2.Label {
-                            text: "Simplified"
-                            font.capitalization: Font.AllUppercase
-                            font.weight: Font.ExtraBold
-                            font.family: "Hack"
-                            font.pointSize: 20
-                            Layout.alignment: Qt.AlignTop
-                            MouseArea {
-                                anchors.fill: parent
-                                onClicked: root.debugMode = !root.debugMode
-                            }
-                        }
+                        // QQC2.Label {
+                        //     text: "Simplified"
+                        //     font.capitalization: Font.AllUppercase
+                        //     font.weight: Font.ExtraBold
+                        //     font.family: "Hack"
+                        //     font.pointSize: 20
+                        //     Layout.alignment: Qt.AlignTop
+                        //     MouseArea {
+                        //         anchors.fill: parent
+                        //         onClicked: root.debugMode = !root.debugMode
+                        //     }
+                        // }
 
                         Item { Layout.fillWidth: true }
 
@@ -244,7 +144,7 @@ QQC2.Pane {
                                     Layout.fillWidth: true
                                     Layout.fillHeight: true
                                     highlighted: _sliderFAtk.pressed
-                                    controllersIds: root.controllersForParam('filterAttack')
+                                    ctrl: root.ctrlFor(root.selectedChannel ? root.selectedChannel.filterAttackControllers : null)
                                     knobControl: _sliderFAtk
                                     onTapped: {
                                         focusIndex = 0
@@ -270,7 +170,7 @@ QQC2.Pane {
                                     Layout.fillWidth: true
                                     Layout.fillHeight: true
                                     highlighted: _sliderFRel.pressed
-                                    controllersIds: root.controllersForParam('filterRelease')
+                                    ctrl: root.ctrlFor(root.selectedChannel ? root.selectedChannel.filterReleaseControllers : null)
                                     debugMode: root.debugMode
                                     knobControl: _sliderFRel
                                     onTapped: {
@@ -305,12 +205,11 @@ QQC2.Pane {
 
                                 Here.MultiController {
                                     id: _multiCutoffController
-                                    debugMode: root.debugMode
+                                    ctrl: root.ctrlFor(root.selectedChannel ? root.selectedChannel.filterCutoffControllers : null)
                                     title: "Cutoff"
                                     Layout.alignment: Qt.AlignCenter
                                     Layout.fillHeight: true
                                     Layout.fillWidth: true
-                                    controllersIds: root.controllersForParam('cutoff')
                                     knobControl: _cutoffDial
                                     onTapped: {
                                         focusIndex = 2
@@ -341,8 +240,8 @@ QQC2.Pane {
 
                                 RowLayout {
                                     Layout.fillWidth: true
-                                    Layout.preferredHeight: 150
-                                    Layout.maximumHeight: 150
+                                    Layout.preferredHeight: 200
+                                    Layout.maximumHeight: 200
 
                                     Here.MultiController {
                                         id: _multiResController
@@ -351,7 +250,7 @@ QQC2.Pane {
                                         Layout.fillHeight: true
                                         Layout.fillWidth: true
                                         highlighted: _resDial.pressed
-                                        controllersIds: root.controllersForParam('resonance')
+                                        ctrl: root.ctrlFor(root.selectedChannel ? root.selectedChannel.filterResonanceControllers : null)
                                         debugMode: root.debugMode
                                         knobControl: _resDial
                                         onTapped: {
@@ -361,6 +260,7 @@ QQC2.Pane {
 
                                         Here.Dial {
                                             id: _resDial
+                                            text: _multiResController.displayText
                                             Layout.fillHeight: true
                                             implicitWidth: height
                                             Layout.alignment: Qt.AlignCenter
@@ -369,17 +269,26 @@ QQC2.Pane {
                                             to: _multiResController.to
                                             value: _multiResController.value
                                             onMoved: _multiResController.setValue(value)
+
+                                            onVisibleChanged: {
+                                                _resDial.value = Qt.binding(function() { return _multiResController.value })
+                                            }
+                                            Component.onCompleted: {
+                                                _resDial.value = Qt.binding(function() { return _multiResController.value })
+                                            }
                                         }
                                     }
 
                                     Here.FilterTypeController {
                                         id: _multiTypeController
                                         title: "Type"
+                                        visible: false // TODO: enable when we have a way to set filter type for different engines
+                                        enabled: false // TODO: enable when we have a way to set filter type for different engines
                                         Layout.alignment: Qt.AlignCenter
                                         Layout.fillHeight: true
                                         Layout.fillWidth: true
                                         highlighted: _typeDial.pressed
-                                        controllersIds: root.controllersForParam('filterType')
+                                        // controllersIds: root.controllersForParam('filterType')
                                         debugMode: root.debugMode
                                         knobControl: _typeDial
 
@@ -416,10 +325,10 @@ QQC2.Pane {
                                     Layout.fillWidth: true
                                     Layout.fillHeight: true
                                     highlighted: _sliderAAtk.pressed
-                                    controllersIds: root.controllersForParam('ampAttack')
+                                    ctrl: root.ctrlFor(root.selectedChannel ? root.selectedChannel.ampAttackControllers : null)
                                     knobControl: _sliderAAtk
                                     onTapped: {
-                                        focusIndex = 5
+                                        focusIndex = 4
                                         focusOrder[focusIndex].forceActiveFocus()
                                     }
 
@@ -450,14 +359,14 @@ QQC2.Pane {
                                     Layout.fillWidth: true
                                     Layout.fillHeight: true
                                     highlighted: _sliderARel.pressed
-                                    controllersIds: root.controllersForParam('ampRelease')
-                                    knobControl: _sliderARel
+                                    ctrl: root.ctrlFor(root.selectedChannel ? root.selectedChannel.ampReleaseControllers : null)
+                                    knobControl: _sliderARel 
                                     onTapped: {
                                         focusIndex = 6
                                         focusOrder[focusIndex].forceActiveFocus()
                                     }
 
-                                    Here.Slider {
+                                    Here.Slider { 
                                         id: _sliderARel
                                         Layout.fillHeight: true
                                         Layout.alignment: Qt.AlignCenter
