@@ -63,7 +63,20 @@ ZUI.ScreenPage {
 
     Connections {
         target: zynqtgui.control
-        onAll_controlsChanged: update()
+        onAll_controlsChanged: _reloadTimer.restart()
+    }
+
+    // Defer the loader reload to the next event-loop tick instead of reacting
+    // synchronously. all_controlsChanged is emitted from inside the Python
+    // fill_list() call, so recreating the Loader's item tree inline tears down
+    // and rebuilds graphical objects reentrantly while `control` is still
+    // mutating, which segfaults in the scene graph. The default edit page
+    // defers the same signal via a 0ms Timer for the same reason.
+    Timer {
+        id: _reloadTimer
+        interval: 0
+        repeat: false
+        onTriggered: update()
     }
 
     function update() {
