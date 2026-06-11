@@ -39,6 +39,22 @@ QQC2.Slider {
     property color foregroundColor: "#fafafa"
     property color alternativeColor: "#16171C"
 
+    // Source value the slider follows when idle. We assign `value` imperatively
+    // from this rather than binding `value:` directly, because QQC2.Slider breaks
+    // any `value` binding the instant the user drags it (or the offset touch
+    // target / knob moves it) — leaving the slider visually stale on the next
+    // external change (e.g. switching tracks). This re-syncs on every change to
+    // the source, skipping only while the user is actively interacting.
+    property real boundValue: 0
+    onBoundValueChanged: {
+        if (!pressed && !_dummySlider.pressed)
+            value = boundValue
+    }
+    Component.onCompleted: value = boundValue
+
+    // Grab focus on press so the parent MultiController shows its focus border.
+    onPressedChanged: if (pressed) forceActiveFocus()
+
     orientation: Qt.Vertical
     padding: 4
     clip: false
@@ -51,9 +67,18 @@ QQC2.Slider {
         width: parent.width
         x: slider.width + 16
         value: slider.value
+        // Pressing this offset touch-target should focus the real slider too.
+        onPressedChanged: if (pressed) slider.forceActiveFocus()
+        // Only propagate a genuine user drag of this offset touch-target. The
+        // `pressed` guard is essential: onValueChanged also fires when the dummy
+        // passively follows slider.value via its binding, and the imperative
+        // `slider.value = value` would then break slider.value's binding to the
+        // controller — so the slider would stop tracking external value changes.
         onValueChanged: {
-            slider.value = value
-            slider.moved()
+            if (_dummySlider.pressed) {
+                slider.value = value
+                slider.moved()
+            }
         }
         from: slider.from
         to: slider.to

@@ -39,11 +39,39 @@ ZUI.ScreenPage {
 
     readonly property string currentEngineId: zynqtgui.curlayerEngineId
     
-    readonly property QtObject selectedChannel: applicationWindow().selectedChannel
+    // selectedChannel is updated through a throttle (debounced, and held back
+    // until the song finishes loading) rather than bound directly, matching
+    // TracksBar — this avoids thrashing the control bindings on rapid channel
+    // changes and during song load.
+    property QtObject selectedChannel: null
     readonly property int selectedSlotRow: root.selectedChannel ? root.selectedChannel.selectedSlotRow : 0
 
-    function ctrlFor(controllers) {
-        return root.selectedChannel && controllers ? controllers[root.selectedSlotRow] : null
+    Timer {
+        id: selectedChannelThrottle
+        interval: 1; running: false; repeat: false;
+        onTriggered: {
+            if (zynqtgui.sketchpad.song && zynqtgui.sketchpad.song.isLoading == false) {
+                root.selectedChannel = applicationWindow().selectedChannel;
+            } else {
+                selectedChannelThrottle.restart();
+            }
+        }
+    }
+    Connections {
+        target: applicationWindow()
+        onSelectedChannelChanged: selectedChannelThrottle.restart()
+    }
+    Component.onCompleted: selectedChannelThrottle.restart()
+
+    // Focus the first enabled control once the channel first becomes available
+    // (the throttle populates it after load, by which point the controls are
+    // enabled). One-shot so it doesn't steal focus on later track switches.
+    property bool _initialFocusDone: false
+    onSelectedChannelChanged: {
+        if (root.selectedChannel && !root._initialFocusDone) {
+            root._initialFocusDone = true
+            Qt.callLater(_content.focusFirstEnabled)
+        }
     }
 
     focus: true
@@ -56,32 +84,9 @@ ZUI.ScreenPage {
     }
 
     property var cuiaCallback: function(cuia) {
-        if (_loader.item && _loader.item.cuiaCallback)
-            return _loader.item.cuiaCallback(cuia);
+        if (_content.cuiaCallback)
+            return _content.cuiaCallback(cuia);
         return false;
-    }
-
-    Connections {
-        target: zynqtgui.control
-        onAll_controlsChanged: _reloadTimer.restart()
-    }
-
-    // Defer the loader reload to the next event-loop tick instead of reacting
-    // synchronously. all_controlsChanged is emitted from inside the Python
-    // fill_list() call, so recreating the Loader's item tree inline tears down
-    // and rebuilds graphical objects reentrantly while `control` is still
-    // mutating, which segfaults in the scene graph. The default edit page
-    // defers the same signal via a 0ms Timer for the same reason.
-    Timer {
-        id: _reloadTimer
-        interval: 0
-        repeat: false
-        onTriggered: update()
-    }
-
-    function update() {
-        _loader.active = false
-        _loader.active = true
     }
 
     contentItem: QQC2.Control {
@@ -90,9 +95,8 @@ ZUI.ScreenPage {
 
         background: null
 
-        contentItem: Loader {
-            id: _loader
-            sourceComponent: Item {
+        contentItem: Item {
+            id: _content
                 property int focusIndex: 0
                 readonly property var focusOrder: [
                     _multiFilterAttackController,
@@ -103,7 +107,21 @@ ZUI.ScreenPage {
                     _multiAmpReleaseController
                 ]
 
-                Component.onCompleted: focusOrder[focusIndex].forceActiveFocus()
+                // Focus the first enabled control (skipping disabled ones). Driven
+                // at startup by root.onSelectedChannelChanged, since at Component
+                // .onCompleted the throttle hasn't populated the channel yet and
+                // the controls are still disabled.
+                function focusFirstEnabled() {
+                    for (var i = 0; i < focusOrder.length; i++) {
+                        if (focusOrder[i].enabled) {
+                            focusIndex = i
+                            focusOrder[i].forceActiveFocus()
+                            return
+                        }
+                    }
+                }
+
+                Component.onCompleted: focusFirstEnabled()
 
                 ColumnLayout {
                     anchors.fill: parent
@@ -152,17 +170,15 @@ ZUI.ScreenPage {
 
                                 Here.MultiController {
                                     id: _multiFilterAttackController
+                                    showFocus: _content.focusIndex === 0
                                     debugMode: root.debugMode
                                     title: "Filter Attack"
                                     Layout.fillWidth: true
                                     Layout.fillHeight: true
                                     highlighted: _sliderFAtk.pressed
-                                    ctrl: root.ctrlFor(root.selectedChannel ? root.selectedChannel.filterAttackControllers : null)
+                                    ctrl: root.selectedChannel ? root.selectedChannel.filterAttackControllers[root.selectedSlotRow] : null
                                     knobControl: _sliderFAtk
-                                    onTapped: {
-                                        focusIndex = 0
-                                        focusOrder[focusIndex].forceActiveFocus()
-                                    }
+                                    onTapped: _content.focusIndex = 0
 
                                     Here.Slider {
                                         id: _sliderFAtk
@@ -172,24 +188,22 @@ ZUI.ScreenPage {
                                         stepSize: _multiFilterAttackController.stepSize
                                         from: _multiFilterAttackController.from
                                         to: _multiFilterAttackController.to
-                                        value: _multiFilterAttackController.value
+                                        boundValue: _multiFilterAttackController.value
                                         onMoved: _multiFilterAttackController.setValue(value)
                                     }
                                 }
 
                                 Here.MultiController {
                                     id: _multiFilterReleaseController
+                                    showFocus: _content.focusIndex === 1
                                     title: "Filter Release"
                                     Layout.fillWidth: true
                                     Layout.fillHeight: true
                                     highlighted: _sliderFRel.pressed
-                                    ctrl: root.ctrlFor(root.selectedChannel ? root.selectedChannel.filterReleaseControllers : null)
+                                    ctrl: root.selectedChannel ? root.selectedChannel.filterReleaseControllers[root.selectedSlotRow] : null
                                     debugMode: root.debugMode
                                     knobControl: _sliderFRel
-                                    onTapped: {
-                                        focusIndex = 1
-                                        focusOrder[focusIndex].forceActiveFocus()
-                                    }
+                                    onTapped: _content.focusIndex = 1
 
                                     Here.Slider {
                                         id: _sliderFRel
@@ -199,7 +213,7 @@ ZUI.ScreenPage {
                                         stepSize: _multiFilterReleaseController.stepSize
                                         from: _multiFilterReleaseController.from
                                         to: _multiFilterReleaseController.to
-                                        value: _multiFilterReleaseController.value
+                                        boundValue: _multiFilterReleaseController.value
                                         onMoved: _multiFilterReleaseController.setValue(value)
                                     }
                                 }
@@ -218,16 +232,14 @@ ZUI.ScreenPage {
 
                                 Here.MultiController {
                                     id: _multiCutoffController
-                                    ctrl: root.ctrlFor(root.selectedChannel ? root.selectedChannel.filterCutoffControllers : null)
+                                    showFocus: _content.focusIndex === 2
+                                    ctrl: root.selectedChannel ? root.selectedChannel.filterCutoffControllers[root.selectedSlotRow] : null
                                     title: "Cutoff"
                                     Layout.alignment: Qt.AlignCenter
                                     Layout.fillHeight: true
                                     Layout.fillWidth: true
                                     knobControl: _cutoffDial
-                                    onTapped: {
-                                        focusIndex = 2
-                                        focusOrder[focusIndex].forceActiveFocus()
-                                    }
+                                    onTapped: _content.focusIndex = 2
 
                                     Here.Dial {
                                         id: _cutoffDial
@@ -258,18 +270,16 @@ ZUI.ScreenPage {
 
                                     Here.MultiController {
                                         id: _multiResController
+                                        showFocus: _content.focusIndex === 3
                                         title: "Resonance"
                                         Layout.alignment: Qt.AlignCenter
                                         Layout.fillHeight: true
                                         Layout.fillWidth: true
                                         highlighted: _resDial.pressed
-                                        ctrl: root.ctrlFor(root.selectedChannel ? root.selectedChannel.filterResonanceControllers : null)
+                                        ctrl: root.selectedChannel ? root.selectedChannel.filterResonanceControllers[root.selectedSlotRow] : null
                                         debugMode: root.debugMode
                                         knobControl: _resDial
-                                        onTapped: {
-                                            focusIndex = 3
-                                            focusOrder[focusIndex].forceActiveFocus()
-                                        }
+                                        onTapped: _content.focusIndex = 3
 
                                         Here.Dial {
                                             id: _resDial
@@ -333,17 +343,15 @@ ZUI.ScreenPage {
 
                                 Here.MultiController {
                                     id: _multiAmpAttackController
+                                    showFocus: _content.focusIndex === 4
                                     debugMode: root.debugMode
                                     title: "Amp Attack"
                                     Layout.fillWidth: true
                                     Layout.fillHeight: true
                                     highlighted: _sliderAAtk.pressed
-                                    ctrl: root.ctrlFor(root.selectedChannel ? root.selectedChannel.ampAttackControllers : null)
+                                    ctrl: root.selectedChannel ? root.selectedChannel.ampAttackControllers[root.selectedSlotRow] : null
                                     knobControl: _sliderAAtk
-                                    onTapped: {
-                                        focusIndex = 4
-                                        focusOrder[focusIndex].forceActiveFocus()
-                                    }
+                                    onTapped: _content.focusIndex = 4
 
                                     Here.Slider {
                                         id: _sliderAAtk
@@ -353,31 +361,22 @@ ZUI.ScreenPage {
                                         stepSize: _multiAmpAttackController.stepSize
                                         from: _multiAmpAttackController.from
                                         to: _multiAmpAttackController.to
-                                        value: _multiAmpAttackController.value
+                                        boundValue: _multiAmpAttackController.value
                                         onMoved: _multiAmpAttackController.setValue(value)
-
-                                        onVisibleChanged: {
-                                            _sliderAAtk.value = Qt.binding(function() { return _multiAmpAttackController.value })
-                                        }
-                                        Component.onCompleted: {
-                                            _sliderAAtk.value = Qt.binding(function() { return _multiAmpAttackController.value })
-                                        }
                                     }
                                 }
 
                                 Here.MultiController {
                                     id: _multiAmpReleaseController
+                                    showFocus: _content.focusIndex === 5
                                     debugMode: root.debugMode
                                     title: "Amp Release"
                                     Layout.fillWidth: true
                                     Layout.fillHeight: true
                                     highlighted: _sliderARel.pressed
-                                    ctrl: root.ctrlFor(root.selectedChannel ? root.selectedChannel.ampReleaseControllers : null)
+                                    ctrl: root.selectedChannel ? root.selectedChannel.ampReleaseControllers[root.selectedSlotRow] : null
                                     knobControl: _sliderARel 
-                                    onTapped: {
-                                        focusIndex = 6
-                                        focusOrder[focusIndex].forceActiveFocus()
-                                    }
+                                    onTapped: _content.focusIndex = 5
 
                                     Here.Slider { 
                                         id: _sliderARel
@@ -387,7 +386,7 @@ ZUI.ScreenPage {
                                         stepSize: _multiAmpReleaseController.stepSize
                                         from: _multiAmpReleaseController.from
                                         to: _multiAmpReleaseController.to
-                                        value: _multiAmpReleaseController.value
+                                        boundValue: _multiAmpReleaseController.value
                                         onMoved: _multiAmpReleaseController.setValue(value)
                                     }
                                 }
@@ -396,29 +395,36 @@ ZUI.ScreenPage {
                     }
                 }
 
+                // Move focus by `step` (+1 forward / -1 back), skipping disabled
+                // controllers and wrapping around. Stays on the current one if none
+                // of the others are enabled.
+                function focusStep(step) {
+                    var n = focusOrder.length
+                    for (var i = 1; i <= n; i++) {
+                        var idx = ((focusIndex + step * i) % n + n) % n
+                        if (focusOrder[idx].enabled) {
+                            focusIndex = idx
+                            break
+                        }
+                    }
+                    focusOrder[focusIndex].forceActiveFocus()
+                }
+
                 function cuiaCallback(cuia) {
                     switch (cuia) {
                     case "SELECT_UP":
                     case "NAVIGATE_LEFT":
-                        if (focusIndex === 0)
-                            focusIndex = focusOrder.length - 1
-                        else
-                            focusIndex--
-                        focusOrder[focusIndex].forceActiveFocus()
+                        focusStep(-1)
                         return true
                     case "SELECT_DOWN":
                     case "NAVIGATE_RIGHT":
-                        if (focusIndex === focusOrder.length - 1)
-                            focusIndex = 0
-                        else
-                            focusIndex++
-                        focusOrder[focusIndex].forceActiveFocus()
+                        focusStep(1)
                         return true
                     case "KNOB0_UP":
-                        focusOrder[focusIndex].knobControl.increase()
+                        focusOrder[focusIndex].increaseValue()
                         return true
                     case "KNOB0_DOWN":
-                        focusOrder[focusIndex].knobControl.decrease()
+                        focusOrder[focusIndex].decreaseValue()
                         return true
                     case "KNOB1_UP":
                     case "KNOB1_DOWN":
@@ -426,18 +432,10 @@ ZUI.ScreenPage {
                     case "KNOB2_DOWN":
                         return true
                     case "KNOB3_UP":
-                        if (focusIndex === focusOrder.length - 1)
-                            focusIndex = 0
-                        else
-                            focusIndex++
-                        focusOrder[focusIndex].forceActiveFocus()
+                        focusStep(1)
                         return true
                     case "KNOB3_DOWN":
-                        if (focusIndex === 0)
-                            focusIndex = focusOrder.length - 1
-                        else
-                            focusIndex--
-                        focusOrder[focusIndex].forceActiveFocus()
+                        focusStep(-1)
                         return true
                     case "SWITCH_SELECT_SHORT":
                     case "SWITCH_SELECT_BOLD":
@@ -447,6 +445,5 @@ ZUI.ScreenPage {
                     }
                 }
             }
-        }
     }
 }

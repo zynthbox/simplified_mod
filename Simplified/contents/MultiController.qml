@@ -53,8 +53,28 @@ QQC2.Control {
     readonly property string displayText: ctrl ? ctrl.value +"%" : "n/a"
     property bool debugMode: false
     property Item knobControl: null
+    // Driven by the parent from its focusIndex — Qt's activeFocus is unreliable
+    // this deep in the StackLayout, so we track the focused control explicitly.
+    property bool showFocus: false
 
     signal tapped()
+
+    // Pressing the slider/dial child mirrors to the controller via tapped() so it
+    // becomes the focused control (same as a background tap). `pressed` is used
+    // rather than activeFocus because the latter doesn't reliably propagate here.
+    Connections {
+        target: root.knobControl
+        function onPressedChanged() {
+            if (root.knobControl && root.knobControl.pressed)
+                root.tapped()
+        }
+        // The slider's offset touch-target (dummy) doesn't set the real slider's
+        // `pressed`, but it forceActiveFocus()es it — catch that case here too.
+        function onActiveFocusChanged() {
+            if (root.knobControl && root.knobControl.activeFocus)
+                root.tapped()
+        }
+    }
 
     background: Item {
         TapHandler {
@@ -62,12 +82,13 @@ QQC2.Control {
         }
 
         Rectangle {
+            id: _focusedRect
             anchors.fill: parent
             anchors.margins: -4
             color: "transparent"
             border.color: "white"
             border.width: 2
-            visible: root.activeFocus
+            visible: root.showFocus && root.enabled
         }
     }
 
