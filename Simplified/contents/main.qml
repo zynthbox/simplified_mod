@@ -83,10 +83,32 @@ ZUI.ScreenPage {
         radius: 10
     }
 
-    property var cuiaCallback: function(cuia) {
+    property var cuiaCallback: function(cuia, originId, track, slot, value) {
         if (_content.cuiaCallback)
-            return _content.cuiaCallback(cuia);
+            return _content.cuiaCallback(cuia, originId, track, slot, value);
         return false;
+    }
+
+    // Set true the first time a KNOB*_ABSOLUTE event arrives — only the fixed-pot (Z2_V5B)
+    // hardware sends those; endless-encoder revisions send _UP/_DOWN. Used to decide whether to
+    // show the physical-position diamond (which is meaningless on an endless encoder).
+    property bool hasFixedEncoders: false
+
+    // The value KNOB0 seeks to pick up = the focused control's position; knobs 1/2 unused → -1
+    // (Jump). Refreshed when the CONTROL changes (focus), not on value change (avoids flicker).
+    // `seekValues` is inherited from ScreenPage and forwarded to the platform by ControlPage.
+    function refreshSeek() {
+        var c = _content.focusOrder[_content.focusIndex]
+        var v0 = (c && c.enabled && c.to > c.from) ? c.seekNormalised : undefined
+        root.seekValues = [v0, -1, -1]
+    }
+
+    // Physical KNOB0 position for the control at focus index `idx` (or -1 to hide the diamond):
+    // only on fixed-encoder hardware and only for the focused control.
+    function knobPosFor(idx) {
+        return (_content.focusIndex === idx && root.hasFixedEncoders
+                && zynqtgui.globalKnobs && zynqtgui.globalKnobs.length > 0)
+            ? zynqtgui.globalKnobs[0].valueNormalised : -1
     }
 
     contentItem: QQC2.Control {
@@ -98,6 +120,7 @@ ZUI.ScreenPage {
         contentItem: Item {
             id: _content
                 property int focusIndex: 0
+                onFocusIndexChanged: root.refreshSeek()
                 readonly property var focusOrder: [
                     _multiFilterAttackController,
                     _multiFilterReleaseController,
@@ -116,6 +139,7 @@ ZUI.ScreenPage {
                         if (focusOrder[i].enabled) {
                             focusIndex = i
                             focusOrder[i].forceActiveFocus()
+                            root.refreshSeek()
                             return
                         }
                     }
@@ -189,6 +213,7 @@ ZUI.ScreenPage {
                                         from: _multiFilterAttackController.from
                                         to: _multiFilterAttackController.to
                                         boundValue: _multiFilterAttackController.value
+                                        knobPositionNormalised: root.knobPosFor(0)
                                         onMoved: _multiFilterAttackController.setValue(value)
                                     }
                                 }
@@ -214,6 +239,7 @@ ZUI.ScreenPage {
                                         from: _multiFilterReleaseController.from
                                         to: _multiFilterReleaseController.to
                                         boundValue: _multiFilterReleaseController.value
+                                        knobPositionNormalised: root.knobPosFor(1)
                                         onMoved: _multiFilterReleaseController.setValue(value)
                                     }
                                 }
@@ -251,6 +277,7 @@ ZUI.ScreenPage {
                                         to: _multiCutoffController.to
                                         stepSize: _multiCutoffController.stepSize
                                         value: _multiCutoffController.value > 0 ? _multiCutoffController.value : 0
+                                        knobPositionNormalised: root.knobPosFor(2)
                                         onMoved: _multiCutoffController.setValue(value)
                                         onValueChanged: _multiCutoffController.setValue(value)
 
@@ -291,6 +318,7 @@ ZUI.ScreenPage {
                                             from: _multiResController.from
                                             to: _multiResController.to
                                             value: _multiResController.value
+                                            knobPositionNormalised: root.knobPosFor(3)
                                             onMoved: _multiResController.setValue(value)
 
                                             onVisibleChanged: {
@@ -362,6 +390,7 @@ ZUI.ScreenPage {
                                         from: _multiAmpAttackController.from
                                         to: _multiAmpAttackController.to
                                         boundValue: _multiAmpAttackController.value
+                                        knobPositionNormalised: root.knobPosFor(4)
                                         onMoved: _multiAmpAttackController.setValue(value)
                                     }
                                 }
@@ -387,6 +416,7 @@ ZUI.ScreenPage {
                                         from: _multiAmpReleaseController.from
                                         to: _multiAmpReleaseController.to
                                         boundValue: _multiAmpReleaseController.value
+                                        knobPositionNormalised: root.knobPosFor(5)
                                         onMoved: _multiAmpReleaseController.setValue(value)
                                     }
                                 }
@@ -410,7 +440,7 @@ ZUI.ScreenPage {
                     focusOrder[focusIndex].forceActiveFocus()
                 }
 
-                function cuiaCallback(cuia) {
+                function cuiaCallback(cuia, originId, track, slot, value) {
                     switch (cuia) {
                     case "SELECT_UP":
                     case "NAVIGATE_LEFT":
@@ -420,11 +450,21 @@ ZUI.ScreenPage {
                     case "NAVIGATE_RIGHT":
                         focusStep(1)
                         return true
+                    // Endless encoder: relative step of the focused control
                     case "KNOB0_UP":
                         focusOrder[focusIndex].increaseValue()
                         return true
                     case "KNOB0_DOWN":
                         focusOrder[focusIndex].decreaseValue()
+                        return true
+                    // Fixed pot (Z2_V5B): absolute position → interpolate onto the control's range
+                    case "KNOB0_ABSOLUTE":
+                        root.hasFixedEncoders = true
+                        focusOrder[focusIndex].setValueAbsolute(value)
+                        return true
+                    case "KNOB1_ABSOLUTE":
+                    case "KNOB2_ABSOLUTE":
+                        root.hasFixedEncoders = true
                         return true
                     case "KNOB1_UP":
                     case "KNOB1_DOWN":

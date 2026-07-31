@@ -43,6 +43,11 @@ QQC2.Dial {
 
     property alias text: _label1.text
 
+    // Physical KNOB0 position as a 0..1 fraction; -1 hides the marker. Set by the parent only on
+    // fixed-encoder (Z2_V5B) hardware + when this control is focused, so you can see where the
+    // absolute pot sits relative to the value.
+    property real knobPositionNormalised: -1
+
     inputMode: QQC2.Dial.Circular
 
     handle: Rectangle {
@@ -132,6 +137,22 @@ QQC2.Dial {
                         }
                     ]
                 }
+            }
+
+            // Physical KNOB0 position marker (diamond) on the dial arc.
+            Rectangle {
+                id: _knobPosMarker
+                visible: dial.knobPositionNormalised >= 0
+                width: 14; height: 14; radius: 2; rotation: 45
+                antialiasing: true
+                color: "#ffffff"
+                border.color: dial.highlightColor; border.width: 2
+                z: 10
+                readonly property real ang: (_indicatorRepeater.startAngle
+                    + dial.knobPositionNormalised * _indicatorRepeater.arcSpan) * Math.PI / 180
+                readonly property real rad: _container.width / 2
+                x: _container.width / 2 + rad * Math.sin(ang) - width / 2
+                y: _container.height / 2 - rad * Math.cos(ang) - height / 2
             }
         }
 

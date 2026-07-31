@@ -179,9 +179,19 @@ QQC2.Control {
         }
     }
 
+    // Current value as a 0..1 fraction of the control's range (for the knob seek/pick-up system).
+    readonly property real seekNormalised: (to > from) ? (value - from) / (to - from) : 0
+
     function setValue(newValue) {
         if (ctrl) {
             ctrl.value = newValue
+        }
+    }
+
+    // Fixed-encoder (absolute pot) support: map a 0..1 knob position onto the control's range.
+    function setValueAbsolute(newValue) {
+        if (ctrl) {
+            setValue(Math.round(root.from + newValue * (root.to - root.from)))
         }
     }
 

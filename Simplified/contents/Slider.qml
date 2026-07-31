@@ -39,6 +39,10 @@ QQC2.Slider {
     property color foregroundColor: "#fafafa"
     property color alternativeColor: "#16171C"
 
+    // Physical KNOB0 position as a 0..1 fraction; -1 hides the marker. Set by the parent only on
+    // fixed-encoder (Z2_V5B) hardware + when this control is focused.
+    property real knobPositionNormalised: -1
+
     // Source value the slider follows when idle. We assign `value` imperatively
     // from this rather than binding `value:` directly, because QQC2.Slider breaks
     // any `value` binding the instant the user drags it (or the offset touch
@@ -339,5 +343,18 @@ QQC2.Slider {
                 }
             }
         }
+    }
+
+    // Physical KNOB0 position marker (diamond) over the vertical track.
+    Rectangle {
+        id: _knobPosMarker
+        visible: slider.knobPositionNormalised >= 0 && slider.orientation === Qt.Vertical
+        width: 14; height: 14; radius: 2; rotation: 45
+        antialiasing: true
+        color: "#ffffff"
+        border.color: slider.highlightColor; border.width: 2
+        z: 10
+        x: slider.width / 2 - width / 2
+        y: slider.topPadding + (1 - slider.knobPositionNormalised) * (slider.availableHeight - height)
     }
 }
